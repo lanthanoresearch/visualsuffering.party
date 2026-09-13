@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Optic Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e1a; --panel:#111a2e; --panel-hi:#182446; --line:#26335a;
+    --ink:#eef1f7; --muted:#8592b4; --accent:#ff4d6d; --accent-dim:#7a2536;
+    --good:#3ddc97; --bad:#ff5a5a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at top, #101a34 0%, var(--bg) 55%);
+    color:var(--ink); font-family:'Space Grotesk', system-ui, sans-serif;
+    min-height:100vh; padding:28px 18px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto; position:relative;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  header.top{margin-bottom:30px;}
+  .eyeline{font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.12em; color:var(--accent); margin:0 0 6px;}
+  h1{font-size:clamp(32px,7vw,48px); line-height:1.02; margin:0 0 10px; font-weight:700;}
+  header.top p{color:var(--muted); font-size:15px; max-width:56ch; margin:0;}
+  h2{font-size:24px; margin:0 0 18px;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; margin-top:8px;}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:14px; cursor:pointer;
+    transition:border-color .15s, transform .15s, background .15s; text-align:left;}
+  .card:hover{border-color:var(--accent); background:var(--panel-hi); transform:translateY(-2px);}
+  .card-preview{width:100%; aspect-ratio:640/420; border-radius:4px; margin-bottom:10px; display:block; background:#000;}
+  .card .num{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); display:block; margin-bottom:6px;}
+  .card h3{margin:0 0 6px; font-size:18px;}
+  .card p{margin:0; color:var(--muted); font-size:12.5px; line-height:1.4;}
+
+  .modegrid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:26px;}
+  .modecard{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:20px; cursor:pointer;
+    transition:border-color .15s, background .15s, transform .15s; display:flex; align-items:center; gap:16px;}
+  .modecard:hover{border-color:var(--accent); background:var(--panel-hi); transform:translateY(-2px);}
+  .modeicon{width:38px; height:38px; color:var(--accent); flex-shrink:0;}
+  .modecard h3{margin:0 0 6px; font-size:20px;}
+  .modecard p{margin:0; color:var(--muted); font-size:13.5px; max-width:42ch;}
+  .modecard .arrow{font-size:22px; color:var(--accent); flex-shrink:0; margin-left:auto;}
+
+  .settingslink{margin-top:24px; background:none; border:1px solid var(--line); color:var(--muted);
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.08em; padding:10px 16px; border-radius:20px; cursor:pointer;}
+  .settingslink:hover{border-color:var(--accent); color:var(--ink);}
+
+  .setting-block{margin-bottom:26px;}
+  .setlabel{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.08em; color:var(--muted); margin:0 0 10px;}
+  .pillrow{display:flex; flex-wrap:wrap; gap:8px;}
+  .pill{font-family:'IBM Plex Mono',monospace; font-size:12.5px; padding:8px 14px; border-radius:20px; border:1px solid var(--line);
+    background:transparent; color:var(--muted); cursor:pointer;}
+  .pill.active{border-color:var(--accent); color:var(--ink); background:var(--accent-dim);}
+  .settingnote{color:var(--muted); font-size:12.5px; margin:8px 0 0;}
+
+  .backbtn{font-family:'IBM Plex Mono',monospace; font-size:12px; padding:9px 18px; border-radius:3px;
+    border:1px solid var(--line); background:transparent; color:var(--ink); cursor:pointer;}
+  .backbtn:hover{border-color:var(--accent);}
+
+  .prompt{color:var(--muted); font-size:14px; margin:0 0 14px;}
+
+  .diffbar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+  .diffbtn{font-family:'IBM Plex Mono',monospace; font-size:12px; padding:7px 14px; border-radius:20px;
+    border:1px solid var(--line); background:transparent; color:var(--muted); cursor:pointer;}
+  .diffbtn.active{border-color:var(--accent); color:var(--ink); background:var(--accent-dim);}
+  .diffbtn.extreme.active{border-color:var(--bad); background:#3a1420; color:var(--ink);}
+
+  .stage{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:4px;
+    padding:14px; display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .stage:fullscreen{background:#000; justify-content:center;}
+  .stage:fullscreen canvas{max-height:78vh;}
+  canvas{max-width:100%; height:auto; border-radius:2px; cursor:pointer; touch-action:manipulation;}
+
+  .timerwrap{width:100%; max-width:640px; height:6px; background:var(--line); border-radius:3px; overflow:hidden;}
+  .timerbar{height:100%; width:100%; background:var(--accent); transition:width .1s linear, background .2s;}
+
+  .stagebar{display:flex; align-items:flex-start; justify-content:space-between; width:100%; max-width:640px; gap:10px;}
+  .stagebar-left{display:flex; align-items:center; padding-top:6px;}
+  .progresswrap{width:70px; height:5px; background:rgba(255,255,255,0.15); border-radius:3px; overflow:hidden;}
+  .progressbar{height:100%; width:0%; background:var(--accent);}
+  #progressInf{font-size:20px; color:var(--accent); line-height:1;}
+  .stagebar-right{display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
+  .stagebar-righttop{display:flex; align-items:center; gap:6px;}
+  .stagetimer{font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--ink); min-width:58px; text-align:right;}
+  .stagetitle{font-family:'Space Grotesk',sans-serif; font-size:13px; color:var(--muted); font-weight:600;}
+  .diffpill{font-family:'IBM Plex Mono',monospace; font-size:10.5px; padding:3px 10px; border-radius:12px;
+    border:1px solid var(--accent); color:var(--ink); background:var(--accent-dim);}
+  .diffpill.extreme{border-color:var(--bad); background:#3a1420;}
+  .miniicon{background:none; border:1px solid var(--line); color:var(--ink); width:24px; height:24px; border-radius:50%;
+    font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .miniicon:hover{border-color:var(--accent);}
+
+  .choices{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:580px;}
+  .choice{font-family:'IBM Plex Mono',monospace; font-size:13px; padding:9px 13px; border-radius:3px;
+    border:1px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer;}
+  .choice:hover{border-color:var(--accent);}
+  .choice.selected{border-color:var(--accent); background:var(--accent-dim);}
+  .choice.mark-good{border-color:var(--good); background:rgba(61,220,151,0.15);}
+  .choice.mark-wrong{border-color:var(--bad); background:rgba(255,90,90,0.15);}
+  .choice:disabled{cursor:default; opacity:.9;}
+
+  .feedback{min-height:34px; font-family:'IBM Plex Mono',monospace; font-size:13.5px; text-align:center; max-width:520px;}
+  .feedback.good{color:var(--good);}
+  .feedback.bad{color:var(--bad);}
+
+  .again{display:none; font-family:'IBM Plex Mono',monospace; font-size:13px; padding:9px 16px; border-radius:3px;
+    border:1px solid var(--line); background:transparent; color:var(--ink); cursor:pointer;}
+  .again:hover{border-color:var(--accent);}
+
+  .transition{position:absolute; inset:0; background:rgba(5,8,16,.97); display:none; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; gap:8px; border-radius:4px; z-index:5; padding:20px;}
+  .trans-diff{font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:.14em; color:var(--accent); margin:0;}
+  .trans-title{font-size:26px; margin:2px 0; font-weight:700;}
+  .trans-flavor{color:var(--muted); font-size:14px; margin:0; max-width:40ch;}
+
+  .pauseoverlay{position:absolute; inset:0; background:rgba(5,8,16,.98); display:none; flex-direction:column;
+    align-items:center; justify-content:center; gap:16px; z-index:20; border-radius:4px; padding:20px; text-align:center;}
+  .pauseoverlay h3{margin:0; font-size:26px;}
+  .pauseoverlay p{margin:0; color:var(--muted); font-size:13px; max-width:36ch;}
+  .pausebtnrow{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+
+  #summaryText{color:var(--muted); font-size:15px; line-height:1.5; margin-bottom:24px;}
+  .summarybtns{display:flex; gap:10px; flex-wrap:wrap;}
+  .primarybtn{font-family:'IBM Plex Mono',monospace; font-size:13px; padding:11px 20px; border-radius:3px;
+    border:1px solid var(--accent); background:var(--accent-dim); color:var(--ink); cursor:pointer;}
+
+  .hiddenback{position:fixed; top:14px; left:14px; width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--muted);
+    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
+    opacity:.35; cursor:pointer; transition:opacity .15s; z-index:50; user-select:none;}
+  .hiddenback:hover, .hiddenback:focus{opacity:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hiddenback" id="hiddenBack" title="back">&#8249;</div>
+
+  <section class="screen active" id="screen-home">
+    <header class="top">
+      <p class="eyeline">PERCEPTION TRIALS — ROOM 1</p>
+      <h1>The Optic Bench</h1>
+      <p>Seven stations, three ways to play. Watch it like a show, race a friend, or train your own eye.</p>
+    </header>
+    <div class="modegrid">
+      <div class="modecard" data-mode="full">
+        <div class="modeicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></div>
+        <div><h3>Full Game</h3><p>One endless run. Random station, ramps through six difficulty stages, then jumps to a new station. Built for groups.</p></div>
+        <span class="arrow">&rarr;</span>
+      </div>
+      <div class="modecard" data-mode="individual">
+        <div class="modeicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></div>
+        <div><h3>Individual Station</h3><p>Pick one of the seven trials and run it on its own, ramping through difficulty on a loop.</p></div>
+        <span class="arrow">&rarr;</span>
+      </div>
+      <div class="modecard" data-mode="eyetest">
+        <div class="modeicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg></div>
+        <div><h3>Eye Test</h3><p>No timer, no crowd. Pick a station and difficulty, click your answer, see if you were right.</p></div>
+        <span class="arrow">&rarr;</span>
+      </div>
+    </div>
+    <button class="settingslink" id="settingsBtn">SETTINGS</button>
+  </section>
+
+  <section class="screen" id="screen-settings">
+    <h2>Settings</h2>
+    <div class="setting-block">
+      <p class="setlabel">ANSWER TIME PER ROUND</p>
+      <div class="pillrow" id="timerOptions"></div>
+      <p class="settingnote">Applies to Full Game and Individual Station. Eye Test is always untimed.</p>
+    </div>
+    <div class="setting-block">
+      <p class="setlabel">SESSION LENGTH</p>
+      <div class="pillrow" id="sessionTypeOptions" style="margin-bottom:8px;"></div>
+      <div class="pillrow" id="sessionValueOptions"></div>
+    </div>
+    <div class="setting-block">
+      <p class="setlabel">PACE BETWEEN ROUNDS</p>
+      <div class="pillrow" id="paceOptions"></div>
+      <p class="settingnote">Controls the transition and reveal time between rounds — never your answer timer.</p>
+    </div>
+    <div class="setting-block">
+      <p class="setlabel">PLAY STYLE</p>
+      <div class="pillrow" id="partyOptions"></div>
+      <p class="settingnote">Solo: click your answer(s) each round. Friends: no input — the round just plays out and reveals the answer.</p>
+    </div>
+    <div class="setting-block">
+      <p class="setlabel">NARRATOR VOICE</p>
+      <div class="pillrow" id="narratorOptions"></div>
+      <p class="settingnote">Your browser's built-in text-to-speech. It has opinions, and knows when to shut up.</p>
+    </div>
+    <div class="setting-block" id="musicBlock" style="display:none;">
+      <p class="setlabel">BACKGROUND MUSIC</p>
+      <div class="pillrow" id="musicOptions"></div>
+    </div>
+    <button class="backbtn" id="settingsDone">DONE</button>
+  </section>
+
+  <section class="screen" id="screen-individualPicker">
+    <h2>Pick a Station</h2>
+    <div class="grid" id="individualGrid"></div>
+  </section>
+
+  <section class="screen" id="screen-eyetestPicker">
+    <h2>Eye Test — Pick a Station</h2>
+    <div class="grid" id="eyetestGrid"></div>
+  </section>
+
+  <section class="screen" id="screen-play">
+    <p class="prompt" id="pgPrompt"></p>
+    <div class="diffbar" id="pgDiffBar"></div>
+    <div class="stage" id="pgStage">
+      <div class="timerwrap" id="pgTimerWrap"><div class="timerbar" id="pgTimerBar"></div></div>
+      <div class="stagebar">
+        <div class="stagebar-left">
+          <div class="progresswrap" id="progressWrap"><div class="progressbar" id="progressBar"></div></div>
+          <span id="progressInf" style="display:none;">&#8734;</span>
+        </div>
+        <div class="stagebar-right">
+          <div class="stagebar-righttop">
+            <button class="miniicon" id="pauseBtn" title="pause">&#10073;&#10073;</button>
+            <button class="miniicon" id="fsBtn" title="fullscreen">&#9974;</button>
+            <span class="stagetimer" id="stageTimerNum"></span>
+          </div>
+          <div class="stagetitle" id="stageTitleText"></div>
+          <div class="diffpill" id="stageDiffPill"></div>
+        </div>
+      </div>
+      <canvas id="canvas" width="640" height="420"></canvas>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="again" id="eyetestAgainBtn">NEXT &rarr;</button>
+      <div class="transition" id="transitionOverlay">
+        <p class="trans-diff" id="transDiff"></p>
+        <h3 class="trans-title" id="transTitle"></h3>
+        <p class="trans-flavor" id="transFlavor"></p>
+      </div>
+      <div class="pauseoverlay" id="pauseOverlay">
+        <h3>Paused</h3>
+        <p>The board is hidden and the clock is stopped. No peeking.</p>
+        <div class="pausebtnrow">
+          <button class="primarybtn" id="resumeBtn">RESUME</button>
+          <button class="backbtn" id="pauseSettingsBtn">SETTINGS</button>
+          <button class="backbtn" id="pauseHomeBtn">QUIT TO HOME</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-summary">
+    <h2>Session Complete</h2>
+    <p id="summaryText"></p>
+    <div class="summarybtns">
+      <button class="primarybtn" id="summaryAgain">PLAY AGAIN</button>
+      <button class="backbtn" id="summaryHome">HOME</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   CORE HELPERS
+--------------------------------------------------------- */
+const canvas = document.getElementById('canvas');
+let ctx = canvas.getContext('2d');
+function bindCanvas(cvs){ ctx = cvs.getContext('2d'); }
+const W = 640, H = 420;
+
+const DIFFS = ['beginner','easy','medium','hard','impossible','nosebleed'];
+const DIFF_LABEL = {beginner:'BEGINNER', easy:'EASY', medium:'MEDIUM', hard:'HARD', impossible:'IMPOSSIBLE', nosebleed:'NOSEBLEED'};
+const EXTREME_DIFFS = ['impossible','nosebleed'];
+const PACE_CONFIG = {
+  fast:{transition:650, reveal:1300},
+  average:{transition:1300, reveal:2200},
+  slow:{transition:2100, reveal:3300}
+};
+
+function hexToRgb(hex){
+  hex = hex.replace('#','');
+  if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const n = parseInt(hex,16);
+  return {r:(n>>16)&255, g:(n>>8)&255, b:n&255};
+}
+function rgbToHex(r,g,b){
+  const c = v => Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0');
+  return '#'+c(r)+c(g)+c(b);
+}
+function shade(hex, amount){
+  const {r,g,b} = hexToRgb(hex);
+  return rgbToHex(r+amount, g+amount, b+amount);
+}
+function hslToHex(h,s,l){
+  s/=100; l/=100;
+  const k = n => (n + h/30) % 12;
+  const a = s * Math.min(l, 1-l);
+  const f = n => l - a*Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n),1)));
+  return rgbToHex(255*f(0), 255*f(8), 255*f(4));
+}
+function lerpHex(hexA, hexB, t){
+  const a = hexToRgb(hexA), b = hexToRgb(hexB);
+  return rgbToHex(a.r+(b.r-a.r)*t, a.g+(b.g-a.g)*t, a.b+(b.b-a.b)*t);
+}
+function sampleGradientColor(bandColors, frac){
+  frac = Math.max(0, Math.min(1, frac));
+  if(frac<=0.5) return lerpHex(bandColors[0], bandColors[1], frac/0.5);
+  return lerpHex(bandColors[1], bandColors[2], (frac-0.5)/0.5);
+}
+function rand(min,max){return Math.random()*(max-min)+min;}
+function randInt(min,max){return Math.floor(rand(min,max+1));}
+function pick(arr){return arr[randInt(0,arr.length-1)];}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=randInt(0,i); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function canvasPoint(evt){
+  const rect = canvas.getBoundingClientRect();
+  const cx = (evt.touches ? evt.touches[0].clientX : evt.clientX) - rect.left;
+  const cy = (evt.touches ? evt.touches[0].clientY : evt.clientY) - rect.top;
+  return { x: cx * (canvas.width/rect.width), y: cy * (canvas.height/rect.height) };
+}
+
+function generateNumberOptions(correct){
+  const opts = new Set([correct]);
+  let guard=0;
+  while(opts.size<6 && guard<200){
+    guard++;
+    let d = correct + randInt(-28,28);
+    if(d<10) d += 20; if(d>99) d -= 20;
+    opts.add(d);
+  }
+  return shuffle(Array.from(opts));
+}
+function pickFitPosition(text, fontSizeRange, marginPx, fontStyleGetter){
+  let fontSize = randInt(fontSizeRange[0], fontSizeRange[1]);
+  ctx.font = fontStyleGetter(fontSize);
+  let w = ctx.measureText(text).width;
+  while(w > W - marginPx*2 && fontSize > 20){
+    fontSize -= 3;
+    ctx.font = fontStyleGetter(fontSize);
+    w = ctx.measureText(text).width;
+  }
+  const halfH = fontSize*0.55;
+  const x = rand(marginPx + w/2, Math.max(marginPx + w/2 + 1, W - marginPx - w/2));
+  const y = rand(marginPx + halfH, Math.max(marginPx + halfH + 1, H - marginPx - halfH));
+  return {fontSize, x, y, w};
+}
+const WORD_FONTS = ["'Space Grotesk', sans-serif", "Georgia, serif", "'Courier New', monospace"];
+function placeWordsNonOverlapping(wordsList, fontSizeRange, marginPx){
+  const placedBoxes = [];
+  const results = [];
+  wordsList.forEach(word=>{
+    let attempt=0, chosen=null;
+    while(attempt<30 && !chosen){
+      attempt++;
+      const fontFamily = pick(WORD_FONTS);
+      const weight = pick([400,700]);
+      const rotation = rand(-16,16)*Math.PI/180;
+      const fontStyleGetter = fs=>`${weight} ${fs}px ${fontFamily}`;
+      const pos = pickFitPosition(word, fontSizeRange, marginPx, fontStyleGetter);
+      const halfW = pos.w/2+8, halfH = pos.fontSize*0.6+8;
+      const box = {x1:pos.x-halfW, y1:pos.y-halfH, x2:pos.x+halfW, y2:pos.y+halfH};
+      const overlaps = placedBoxes.some(b=> !(box.x2<b.x1||box.x1>b.x2||box.y2<b.y1||box.y1>b.y2));
+      if(!overlaps){ chosen={word,pos,fontStyleGetter,rotation}; placedBoxes.push(box); }
+    }
+    if(!chosen){
+      const fontStyleGetter = fs=>`700 ${fs}px 'Space Grotesk', sans-serif`;
+      const pos = pickFitPosition(word, [fontSizeRange[0],fontSizeRange[0]+8], marginPx, fontStyleGetter);
+      chosen = {word,pos,fontStyleGetter,rotation:0};
+    }
+    results.push(chosen);
+  });
+  return results;
+}
+
+/* ---------------------------------------------------------
+   SHAPE PATHS
+--------------------------------------------------------- */
+function pathFor(type, cx, cy, s){
+  ctx.beginPath();
+  if(type==='star'){
+    for(let i=0;i<10;i++){
+      const r = i%2===0 ? s : s*0.42;
+      const a = Math.PI/2 + i*Math.PI/5;
+      const x = cx + r*Math.cos(a), y = cy - r*Math.sin(a);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+  } else if(type==='heart'){
+    ctx.moveTo(cx, cy + s*0.6);
+    ctx.bezierCurveTo(cx - s*1.3, cy - s*0.4, cx - s*0.5, cy - s*1.3, cx, cy - s*0.4);
+    ctx.bezierCurveTo(cx + s*0.5, cy - s*1.3, cx + s*1.3, cy - s*0.4, cx, cy + s*0.6);
+    ctx.closePath();
+  } else if(type==='tree'){
+    ctx.moveTo(cx - s*0.15, cy + s*0.9); ctx.lineTo(cx + s*0.15, cy + s*0.9);
+    ctx.lineTo(cx + s*0.15, cy + s*0.3); ctx.lineTo(cx + s*0.6, cy + s*0.3);
+    ctx.lineTo(cx, cy - s*1.1); ctx.lineTo(cx - s*0.6, cy + s*0.3);
+    ctx.lineTo(cx - s*0.15, cy + s*0.3); ctx.closePath();
+  } else if(type==='cloud'){
+    ctx.arc(cx - s*0.5, cy + s*0.15, s*0.55, 0, Math.PI*2);
+    ctx.arc(cx, cy - s*0.2, s*0.7, 0, Math.PI*2);
+    ctx.arc(cx + s*0.55, cy + s*0.1, s*0.5, 0, Math.PI*2);
+    ctx.closePath();
+  } else if(type==='triangle'){
+    ctx.moveTo(cx, cy - s); ctx.lineTo(cx + s*0.9, cy + s*0.8);
+    ctx.lineTo(cx - s*0.9, cy + s*0.8); ctx.closePath();
+  } else if(type==='square'){
+    ctx.rect(cx - s*0.75, cy - s*0.75, s*1.5, s*1.5);
+  } else if(type==='diamond'){
+    ctx.moveTo(cx, cy - s); ctx.lineTo(cx + s*0.75, cy);
+    ctx.lineTo(cx, cy + s); ctx.lineTo(cx - s*0.75, cy); ctx.closePath();
+  } else if(type==='moon'){
+    const dx = s*0.28, r2 = s*0.68;
+    ctx.arc(cx, cy, s, 0, Math.PI*2, true);
+    ctx.arc(cx+dx, cy, r2, 0, Math.PI*2, false);
+    ctx.closePath();
+  } else if(type==='bolt'){
+    ctx.moveTo(cx-s*0.1, cy-s); ctx.lineTo(cx+s*0.45, cy-s*0.05); ctx.lineTo(cx, cy-s*0.05);
+    ctx.lineTo(cx+s*0.1, cy+s); ctx.lineTo(cx-s*0.45, cy+s*0.15); ctx.lineTo(cx, cy+s*0.15);
+    ctx.closePath();
+  } else if(type==='flower'){
+    for(let i=0;i<4;i++){
+      const a = i*Math.PI/2 + Math.PI/4;
+      ctx.moveTo(cx + Math.cos(a)*s*0.5 + s*0.5, cy + Math.sin(a)*s*0.5);
+      ctx.arc(cx+Math.cos(a)*s*0.5, cy+Math.sin(a)*s*0.5, s*0.5, 0, Math.PI*2);
+    }
+    ctx.arc(cx,cy,s*0.3,0,Math.PI*2);
+    ctx.closePath();
+  } else {
+    ctx.arc(cx, cy, s*0.85, 0, Math.PI*2);
+  }
+}
+
+/* ---------------------------------------------------------
+   GAME DEFINITIONS — 'click' | 'choice' | 'multiselect'
+   Six difficulty tiers now: beginner is easier than the old
+   "easy", and everything above it nudged a touch harder.
+--------------------------------------------------------- */
+let roundAnswer = null;
+
+const GAMES = [
+  {
+    id:'oddbar', type:'click',
+    title:'The Odd Bar', swatch:'#e619b0',
+    blurb:'Ten bars in a fresh random color every round. One is a different shade. Find it.',
+    prompt:'Click the bar that is a different shade from the rest.',
+    params:{beginner:70, easy:44, medium:22, hard:12, impossible:5, nosebleed:1.5},
+    render(diff){
+      const delta = this.params[diff];
+      const hue = randInt(0,359);
+      const sat = pick([0,0,15,40,65,85]);
+      const light = rand(22,72);
+      const base = hslToHex(hue, sat, light);
+      const n = 10;
+      const oddIndex = randInt(0,n-1);
+      const barW = W/n;
+      roundAnswer = {oddIndex, barW};
+      ctx.fillStyle = '#050810'; ctx.fillRect(0,0,W,H);
+      for(let i=0;i<n;i++){
+        ctx.fillStyle = (i===oddIndex) ? shade(base, delta*(Math.random()<0.5?1:-1)) : base;
+        ctx.fillRect(i*barW+2, 30, barW-4, H-90);
+        ctx.fillStyle = '#8592b4'; ctx.font = '13px IBM Plex Mono'; ctx.textAlign = 'center';
+        ctx.fillText(i+1, i*barW + barW/2, H-40);
+      }
+    },
+    handleClick(pt){ return Math.floor(pt.x / roundAnswer.barW) === roundAnswer.oddIndex; },
+    drawHighlight(){
+      ctx.save(); ctx.strokeStyle = '#3ddc97'; ctx.lineWidth = 4;
+      ctx.strokeRect(roundAnswer.oddIndex*roundAnswer.barW+4, 26, roundAnswer.barW-8, H-82);
+      ctx.restore();
+    },
+    getCaption(){ return `Bar #${roundAnswer.oddIndex+1} was the different shade.`; }
+  },
+  {
+    id:'hiddenshape', type:'choice',
+    title:'The Hidden Shape', swatch:'#f2c300',
+    blurb:'A shape hides in a solid field of color, randomly placed and sized. Name it.',
+    prompt:'A shape is hidden in the color below. Which one is it?',
+    params:{beginner:48, easy:30, medium:15, hard:8, impossible:4, nosebleed:1.5},
+    shapes:['star','heart','tree','moon','cloud','diamond','bolt','flower'],
+    bgs:['#f2c300','#2fb6a3','#7d5fff','#e0563d','#ff8fab','#4a4a4a'],
+    render(diff){
+      const delta = this.params[diff];
+      const bg = pick(this.bgs);
+      const shapeType = pick(this.shapes);
+      const size = rand(55,95);
+      const cx = rand(size+40, W-size-40), cy = rand(size+30, H-size-30);
+      ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = shade(bg, delta * (Math.random()<0.5?1:-1));
+      pathFor(shapeType, cx, cy, size);
+      ctx.fill();
+      roundAnswer = {cx, cy, size, shapeType};
+    },
+    choices(){ return shuffle(this.shapes.map(s => ({label:s, correct: s===roundAnswer.shapeType}))); },
+    drawHighlight(){
+      ctx.save();
+      ctx.fillStyle = '#39ff8f';
+      pathFor(roundAnswer.shapeType, roundAnswer.cx, roundAnswer.cy, roundAnswer.size);
+      ctx.fill();
+      ctx.restore();
+    },
+    getCaption(){ return `It was a ${roundAnswer.shapeType}.`; }
+  },
+  {
+    id:'buriednumber', type:'choice',
+    title:'The Buried Digit', swatch:'#35d6a0',
+    blurb:'A number dissolved into a fresh gradient, random size, font, and spot. Pick it.',
+    prompt:'A number is hidden below. Which one is it?',
+    params:{beginner:52, easy:34, medium:17, hard:9, impossible:4, nosebleed:1.5},
+    render(diff){
+      const delta = this.params[diff];
+      const hue = randInt(0,359);
+      const bandColors = [hslToHex(hue,70,60), hslToHex((hue+40)%360,70,55), hslToHex((hue+80)%360,70,60)];
+      const grad = ctx.createLinearGradient(0,0,W,0);
+      bandColors.forEach((c,i)=>grad.addColorStop(i/(bandColors.length-1), c));
+      ctx.fillStyle = grad; ctx.fillRect(0,0,W,H);
+      const num = randInt(10,99);
+      const options = generateNumberOptions(num);
+      const fontFamily = pick(["'Space Grotesk', sans-serif","'IBM Plex Mono', monospace"]);
+      const rotation = rand(-8,8)*Math.PI/180;
+      const fontStyleGetter = fs => `bold ${fs}px ${fontFamily}`;
+      const pos = pickFitPosition(String(num), [65,185], 26, fontStyleGetter);
+      const localBg = sampleGradientColor(bandColors, pos.x / W);
+      ctx.save();
+      ctx.translate(pos.x, pos.y); ctx.rotate(rotation);
+      ctx.font = fontStyleGetter(pos.fontSize);
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle = shade(localBg, delta * (Math.random()<0.5?1:-1));
+      ctx.fillText(String(num), 0, 0);
+      ctx.restore();
+      roundAnswer = {num, options, pos, fontStyleGetter, rotation};
+    },
+    choices(){ return roundAnswer.options.map(o=>({label:String(o), correct:o===roundAnswer.num})); },
+    drawHighlight(){
+      ctx.save();
+      ctx.translate(roundAnswer.pos.x, roundAnswer.pos.y); ctx.rotate(roundAnswer.rotation);
+      ctx.font = roundAnswer.fontStyleGetter(roundAnswer.pos.fontSize);
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.lineWidth=3; ctx.strokeStyle='#000'; ctx.strokeText(String(roundAnswer.num), 0, 0);
+      ctx.fillStyle='#fff'; ctx.fillText(String(roundAnswer.num), 0, 0);
+      ctx.restore();
+    },
+    getCaption(){ return `The number was ${roundAnswer.num}.`; }
+  },
+  {
+    id:'buriedword', type:'multiselect',
+    title:'The Buried Words', swatch:'#7d5fff',
+    blurb:'One to six words dissolved into a fresh-colored field. Find all of them.',
+    prompt:'Somewhere between one and six words are hidden below. Select every word you can find.',
+    params:{beginner:42, easy:26, medium:13, hard:7, impossible:3.5, nosebleed:1.2},
+    words:['TREE','STAR','MOON','FISH','LEAF','CLOUD','STONE','RIVER','FLAME','GHOST','OCEAN','BERRY','SHARK','CANDY','FROST','MAPLE'],
+    render(diff){
+      const delta = this.params[diff];
+      const bg = hslToHex(randInt(0,359), randInt(35,70), randInt(35,60));
+      ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+      const count = randInt(1,6);
+      const chosenWords = shuffle(this.words).slice(0,count);
+      const placedStyled = placeWordsNonOverlapping(chosenWords, [30,66], 28);
+      placedStyled.forEach(pw=>{
+        ctx.save();
+        ctx.translate(pw.pos.x, pw.pos.y); ctx.rotate(pw.rotation);
+        ctx.font = pw.fontStyleGetter(pw.pos.fontSize);
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillStyle = shade(bg, delta * (Math.random()<0.5?1:-1));
+        ctx.fillText(pw.word, 0, 0);
+        ctx.restore();
+      });
+      const options = shuffle(this.words).map(w=>({label:w, correct: chosenWords.includes(w)}));
+      roundAnswer = {placedWords: chosenWords, placedStyled, options};
+    },
+    choices(){ return roundAnswer.options; },
+    drawHighlight(){
+      roundAnswer.placedStyled.forEach(pw=>{
+        ctx.save();
+        ctx.translate(pw.pos.x, pw.pos.y); ctx.rotate(pw.rotation);
+        ctx.font = pw.fontStyleGetter(pw.pos.fontSize);
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.lineWidth=2; ctx.strokeStyle='#000'; ctx.strokeText(pw.word, 0, 0);
+        ctx.fillStyle='#fff'; ctx.fillText(pw.word, 0, 0);
+        ctx.restore();
+      });
+    },
+    getCaption(){
+      const n = roundAnswer.placedWords.length;
+      return `Hidden word${n>1?'s':''}: ${roundAnswer.placedWords.join(', ')}.`;
+    }
+  },
+  {
+    id:'sameshade', type:'choice',
+    title:"Which One's Wider?", swatch:'#f2f2f2',
+    blurb:'Two blocks sit inside a randomized perspective illusion, on a fresh background and color every round.',
+    prompt:'Which block is truly wider — or are they the same width?',
+    params:{
+      beginner:{lines:[1,2], contrast:[0.65,0.85], diffPct:[32,45]},
+      easy:{lines:[2,4], contrast:[0.5,0.7], diffPct:[22,32]},
+      medium:{lines:[7,11], contrast:[0.36,0.5], diffPct:[14,20]},
+      hard:{lines:[13,19], contrast:[0.28,0.4], diffPct:[8,13]},
+      impossible:{lines:[21,30], contrast:[0.16,0.26], diffPct:[5,9]},
+      nosebleed:{lines:[32,44], contrast:[0.07,0.15], diffPct:[0,3]}
+    },
+    blockColors:['#e8d34a','#e0563d','#5cc8ff','#3ddc97','#ffffff','#111111'],
+    render(diff){
+      const p = this.params[diff];
+      const flip = Math.random()<0.5;
+      const lineCount = randInt(p.lines[0], p.lines[1]);
+      const contrast = rand(p.contrast[0], p.contrast[1]);
+      const thickness = rand(1,3.2);
+      const bg = hslToHex(randInt(0,359), randInt(15,35), randInt(8,16));
+      ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+      const vpX = W/2;
+      const vpY = flip ? rand(H-70,H-15) : rand(15,70);
+      const farY = flip ? rand(15,70) : rand(H-70,H-15);
+      const baseSpread = rand(70,170);
+
+      ctx.lineWidth = thickness;
+      for(let i=0;i<lineCount;i++){
+        const t = lineCount<=1 ? 1 : i/(lineCount-1);
+        const spread = baseSpread * (0.3 + t*1.0);
+        ctx.strokeStyle = `rgba(255,255,255,${contrast})`;
+        ctx.beginPath();
+        ctx.moveTo(vpX, vpY); ctx.lineTo(vpX - spread, farY);
+        ctx.moveTo(vpX, vpY); ctx.lineTo(vpX + spread, farY);
+        ctx.stroke();
+      }
+
+      const nearY = flip ? rand(90,150) : rand(H-150,H-90);
+      const farBarY = flip ? rand(H-150,H-90) : rand(90,150);
+      const baseW = rand(120,190);
+      const sameRound = Math.random()<0.5;
+      let wNear = baseW, wFar = baseW, widerIsNear = null;
+      if(!sameRound){
+        const diffPct = rand(p.diffPct[0], p.diffPct[1])/100;
+        widerIsNear = Math.random()<0.5;
+        if(widerIsNear) wNear = baseW*(1+diffPct); else wFar = baseW*(1+diffPct);
+      }
+      const blockColor = pick(this.blockColors);
+      const nearBar = {x:vpX-wNear/2, y:nearY, w:wNear, h:22};
+      const farBar = {x:vpX-wFar/2, y:farBarY, w:wFar, h:22};
+      [nearBar, farBar].forEach(bar=>{
+        ctx.fillStyle = blockColor;
+        ctx.fillRect(bar.x, bar.y, bar.w, bar.h);
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth=1;
+        ctx.strokeRect(bar.x+0.5, bar.y+0.5, bar.w-1, bar.h-1);
+      });
+
+      const topBar = flip ? farBar : nearBar;
+      const botBar = flip ? nearBar : farBar;
+      let correctLabel;
+      if(sameRound) correctLabel = 'same';
+      else{
+        const widerBar = widerIsNear ? nearBar : farBar;
+        correctLabel = (widerBar===topBar) ? 'top' : 'bottom';
+      }
+      roundAnswer = {topBar, botBar, correctLabel};
+    },
+    choices(){
+      return [
+        {label:'Top block is wider', correct: roundAnswer.correctLabel==='top'},
+        {label:'Bottom block is wider', correct: roundAnswer.correctLabel==='bottom'},
+        {label:'They are the same width', correct: roundAnswer.correctLabel==='same'}
+      ];
+    },
+    drawHighlight(){
+      ctx.save();
+      ctx.lineWidth=2; ctx.setLineDash([6,5]);
+      ctx.strokeStyle = '#5cc8ff';
+      ctx.beginPath(); ctx.moveTo(roundAnswer.topBar.x, 0); ctx.lineTo(roundAnswer.topBar.x, H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(roundAnswer.topBar.x+roundAnswer.topBar.w, 0); ctx.lineTo(roundAnswer.topBar.x+roundAnswer.topBar.w, H); ctx.stroke();
+      ctx.strokeStyle = '#ff4d6d';
+      ctx.beginPath(); ctx.moveTo(roundAnswer.botBar.x, 0); ctx.lineTo(roundAnswer.botBar.x, H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(roundAnswer.botBar.x+roundAnswer.botBar.w, 0); ctx.lineTo(roundAnswer.botBar.x+roundAnswer.botBar.w, H); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    },
+    getCaption(){
+      if(roundAnswer.correctLabel==='same') return 'They were exactly the same width — the blue and pink lines line up.';
+      return `The ${roundAnswer.correctLabel} block was truly wider — its lines sit outside the other's.`;
+    }
+  },
+  {
+    id:'ghostbars', type:'choice',
+    title:'Ghost Behind the Bars', swatch:'#111111',
+    blurb:'Black stripes always visible on white. A shape of random size hides faintly behind them, somewhere new every round.',
+    prompt:'Look through the stripes. What shape is hiding behind them?',
+    params:{beginner:0.32, easy:0.18, medium:0.10, hard:0.06, impossible:0.035, nosebleed:0.02},
+    shapes:['circle','triangle','square','star','heart','diamond'],
+    render(diff){
+      const opacity = this.params[diff];
+      const shapeType = pick(this.shapes);
+      const size = rand(60,140);
+      const cx = rand(size+30, W-size-30), cy = rand(size+30, H-size-30);
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = '#000000';
+      pathFor(shapeType, cx, cy, size); ctx.fill();
+      ctx.restore();
+      ctx.fillStyle = '#000000';
+      const stripeW=6, gap=6;
+      for(let x=0;x<W;x+=stripeW+gap){ ctx.fillRect(x,0,stripeW,H); }
+      roundAnswer = {shapeType, cx, cy, size};
+    },
+    choices(){ return shuffle(this.shapes.map(s=>({label:s, correct: s===roundAnswer.shapeType}))); },
+    drawHighlight(){
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = '#000000';
+      pathFor(roundAnswer.shapeType, roundAnswer.cx, roundAnswer.cy, roundAnswer.size); ctx.fill();
+      const stripeW=6, gap=6;
+      for(let x=0;x<W;x+=stripeW+gap){ ctx.fillRect(x,0,stripeW,H); }
+      ctx.save(); ctx.strokeStyle = '#ff4d6d'; ctx.lineWidth=3;
+      pathFor(roundAnswer.shapeType, roundAnswer.cx, roundAnswer.cy, roundAnswer.size); ctx.stroke();
+      ctx.restore();
+    },
+    getCaption(){ return `It was a ${roundAnswer.shapeType}.`; }
+  },
+  {
+    id:'lineshift', type:'click',
+    title:'The Line-Shifted Hue', swatch:'#5cc8ff',
+    blurb:'Colored scanlines wash over a scattered, freely-placed field of balls in a fresh random color every round.',
+    prompt:'One ball has a genuinely different true color from the rest. Click it.',
+    params:{beginner:75, easy:48, medium:26, hard:14, impossible:6, nosebleed:2.5},
+    render(diff){
+      const delta = this.params[diff];
+      ctx.fillStyle = '#0b0b0b'; ctx.fillRect(0,0,W,H);
+      const hue = randInt(0,359);
+      const count = randInt(12,16);
+      const balls = [];
+      let guard=0;
+      while(balls.length<count && guard<400){
+        guard++;
+        const r = rand(22,38);
+        const cx = rand(r+20, W-r-20), cy = rand(r+20, H-r-20);
+        const collide = balls.some(b=>Math.hypot(b.cx-cx,b.cy-cy) < (b.r+r+12));
+        if(!collide) balls.push({cx,cy,r});
+      }
+      const oddIdx = randInt(0, balls.length-1);
+      balls.forEach((b,i)=>{
+        const isOdd = i===oddIdx;
+        const hueVal = isOdd ? (hue + delta*(Math.random()<0.5?1:-1) + 360)%360 : hue;
+        b.color = `hsl(${hueVal},65%,55%)`;
+      });
+      balls.forEach(b=>{ ctx.beginPath(); ctx.arc(b.cx,b.cy,b.r,0,Math.PI*2); ctx.fillStyle=b.color; ctx.fill(); });
+      const lineColors = ['rgba(255,0,60,0.35)','rgba(0,255,110,0.3)','rgba(0,140,255,0.32)'];
+      let li=0;
+      for(let y=0;y<H;y+=5){ ctx.fillStyle = lineColors[li % lineColors.length]; ctx.fillRect(0,y,W,2); li++; }
+      roundAnswer = {balls, oddIdx};
+    },
+    handleClick(pt){
+      for(let i=0;i<roundAnswer.balls.length;i++){
+        const b = roundAnswer.balls[i];
+        if(Math.hypot(pt.x-b.cx, pt.y-b.cy) < b.r) return i === roundAnswer.oddIdx;
+      }
+      return false;
+    },
+    drawHighlight(){
+      ctx.fillStyle = '#0b0b0b'; ctx.fillRect(0,0,W,H);
+      roundAnswer.balls.forEach((b,i)=>{
+        ctx.beginPath(); ctx.arc(b.cx,b.cy,b.r*1.25,0,Math.PI*2);
+        ctx.fillStyle = b.color; ctx.fill();
+        if(i===roundAnswer.oddIdx){ ctx.lineWidth=4; ctx.strokeStyle='#3ddc97'; ctx.stroke(); }
+      });
+    },
+    getCaption(){ return 'That ball was a genuinely different color — true colors shown above.'; }
+  }
+];
+const GAME_IDS = GAMES.map(g=>g.id);
+function gameById(id){ return GAMES.find(g=>g.id===id); }
+
+/* ---------------------------------------------------------
+   NARRATOR
+--------------------------------------------------------- */
+const FLAVOR = {
+  oddbar: ["One of these is a filthy liar.", "Ten bars. One traitor.", "I'd point it out, but I'm a voice with no eyes.", "Somewhere in here: betrayal.", "Ten shades walk into a bar. One doesn't belong."],
+  hiddenshape: ["Something is hiding in plain sight.", "Don't blink. I would, if I had eyelids.", "A shape, a color, a secret.", "Squint if you must.", "It's right there. Probably."],
+  buriednumber: ["The numbers do not want to be found.", "Do the math. Or guess.", "Somewhere in there, digits.", "Count on nothing, including me."],
+  buriedword: ["Words are terrible at hiding.", "Find them all. I'll wait, robotically.", "A word search designed by someone who dislikes you.", "Some words are there. Some are traps."],
+  sameshade: ["Trust your eyes. Or don't, I'm not your therapist.", "Perspective is a liar, and so am I, sometimes.", "Same size. Wildly different story.", "Width is a construct."],
+  ghostbars: ["Something is behind the stripes.", "Stripes hide more than zebras.", "Barely there. On purpose.", "A ghost, somewhere in the lines."],
+  lineshift: ["The lights are lying to you.", "Color is a suggestion at this point.", "New colors, same old trick.", "Somewhere, a genuine imposter."]
+};
+const FLAVOR_INTRO = {
+  oddbar: "Ten bars, a new color every round. One is a different shade. Find the odd one out.",
+  hiddenshape: "A shape hides inside a solid field of color, somewhere new every time. Spot it and name it.",
+  buriednumber: "A number is dissolved into a fresh gradient. Read it before it disappears.",
+  buriedword: "Between one and six words are hidden. Find every single one.",
+  sameshade: "Two blocks sit inside a perspective illusion. Figure out which one is actually wider, if either.",
+  ghostbars: "A faint shape of random size hides behind a screen of black stripes. Look through them.",
+  lineshift: "Colored scanlines wash over a scattered field of balls. One ball is a genuinely different color underneath."
+};
+const DIFF_ANNOUNCE = {
+  beginner: ["This is basically a tutorial.", "Relax. Practically a freebie.", "Beginner mode. Even you can't miss this."],
+  easy: ["Baby's first round.", "Warm-up.", "Easy mode."],
+  medium: ["Getting spicy.", "This is where casuals start sweating.", "Medium difficulty."],
+  hard: ["Now we're talking.", "This one bites back a little.", "Hard mode."],
+  impossible: ["Impossible, as advertised.", "You're probably not going to see this.", "Good luck with this."],
+  nosebleed: ["Nosebleed. Godspeed.", "This is basically a cry for help.", "I can't see it either."]
+};
+function estimateSpeechMs(text){ return text.trim().split(/\s+/).length * 300 + 250; }
+function speak(text){
+  if(!settings.narratorOn) return;
+  if(!('speechSynthesis' in window)) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.03; u.pitch = 1.0;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function speakForRound(gameObj, diffLine, flavorLine){
+  if(!settings.narratorOn) return;
+  const pace = PACE_CONFIG[settings.pace];
+  const budgetMs = pace.transition + Math.min(settings.timerSeconds*1000, 6000)*0.5;
+  if(settings.timerSeconds <= 2 && pace.transition < 900) return;
+  const full = `${diffLine} ${gameObj.title}. ${flavorLine}`;
+  const short = `${diffLine} ${gameObj.title}.`;
+  if(estimateSpeechMs(full) <= budgetMs) speak(full);
+  else if(estimateSpeechMs(short) <= budgetMs) speak(short);
+  else if(estimateSpeechMs(diffLine) <= budgetMs) speak(diffLine);
+}
+
+/* ---------------------------------------------------------
+   MUSIC — probes for optional track1.mp3..track6.mp3
+--------------------------------------------------------- */
+const TRACK_COUNT = 6;
+let availableTracks = [];
+let activeAudio = null;
+function probeTracks(){
+  const promises = [];
+  for(let i=1;i<=TRACK_COUNT;i++){
+    promises.push(new Promise(resolve=>{
+      const a = new Audio();
+      let done=false;
+      const finish = (ok)=>{ if(done) return; done=true; resolve(ok?{index:i, el:a}:null); };
+      a.addEventListener('canplaythrough', ()=>finish(true), {once:true});
+      a.addEventListener('error', ()=>finish(false), {once:true});
+      setTimeout(()=>finish(false), 3500);
+      a.src = `track${i}.mp3`;
+      a.preload = 'auto';
+    }));
+  }
+  return Promise.all(promises).then(r=>r.filter(Boolean));
+}
+function fadeAudio(audioEl, from, to, durationMs, onDone){
+  const steps=20; let i=0;
+  const iv = setInterval(()=>{
+    i++;
+    audioEl.volume = from + (to-from)*(i/steps);
+    if(i>=steps){ clearInterval(iv); audioEl.volume=to; if(onDone) onDone(); }
+  }, durationMs/steps);
+}
+function playTrack(index){
+  const found = availableTracks.find(t=>t.index===index);
+  if(!found) return;
+  const newAudio = found.el;
+  newAudio.loop = true; newAudio.volume = 0; newAudio.currentTime = 0;
+  newAudio.play().catch(()=>{});
+  fadeAudio(newAudio, 0, 0.32, 1200);
+  if(activeAudio && activeAudio!==newAudio){
+    const old = activeAudio;
+    fadeAudio(old, old.volume, 0, 1200, ()=>old.pause());
+  }
+  activeAudio = newAudio;
+  settings.musicTrack = index;
+  persistSettings();
+}
+function stopMusic(){
+  if(activeAudio){ const old=activeAudio; fadeAudio(old, old.volume, 0, 800, ()=>old.pause()); activeAudio=null; }
+  settings.musicTrack = null;
+  persistSettings();
+}
+probeTracks().then(found=>{ availableTracks = found; renderSettingsScreen(); });
+
+/* ---------------------------------------------------------
+   GLOBAL STATE + PERSISTED SETTINGS
+--------------------------------------------------------- */
+const settings = { timerSeconds:7, sessionType:'rounds', sessionRounds:10, sessionMinutes:10, soloMode:true, narratorOn:true, pace:'average', musicTrack:null };
+let session = null;
+let sessionScore = {correct:0, total:0};
+let eyetest = { station:null, difficulty:'easy' };
+let playMode = null;
+let activeTimerInterval = null;
+let paused = false;
+let pausedWhileRunning = false;
+let timerRunning = false;
+let currentRemaining = null, currentTotal = null, currentTimerTick = null, currentTimerExpire = null;
+let currentMultiselectSubmit = null;
+let currentGameObj = null, currentDiff = null;
+
+// pausable scheduler for the transition/reveal chain (fixes rounds silently
+// auto-advancing in the background while paused or in Settings)
+let pendingTimeout = null, pendingCallback = null, pendingRemainingMs = null, pendingStartedAt = null;
+function scheduleGameStep(fn, ms){
+  pendingCallback = fn; pendingStartedAt = Date.now(); pendingRemainingMs = ms;
+  pendingTimeout = setTimeout(()=>{ pendingTimeout=null; pendingCallback=null; fn(); }, ms);
+}
+function pausePendingStep(){
+  if(pendingTimeout){
+    clearTimeout(pendingTimeout);
+    pendingRemainingMs = Math.max(0, pendingRemainingMs - (Date.now()-pendingStartedAt));
+    pendingTimeout = null;
+  }
+}
+function resumePendingStep(){
+  if(pendingCallback && pendingTimeout===null){
+    const fn = pendingCallback;
+    pendingStartedAt = Date.now();
+    pendingTimeout = setTimeout(()=>{ pendingTimeout=null; pendingCallback=null; fn(); }, pendingRemainingMs);
+  }
+}
+function clearPendingStep(){
+  if(pendingTimeout){ clearTimeout(pendingTimeout); pendingTimeout=null; }
+  pendingCallback = null;
+}
+
+async function persistSettings(){
+  try{ if(window.storage) await window.storage.set('optic_bench_settings', JSON.stringify(settings), false); }catch(e){}
+}
+async function loadPersistedSettings(){
+  try{
+    if(window.storage){
+      const res = await window.storage.get('optic_bench_settings', false);
+      if(res && res.value){ Object.assign(settings, JSON.parse(res.value)); }
+    }
+  }catch(e){}
+}
+loadPersistedSettings();
+
+/* ---------------------------------------------------------
+   SCREEN NAVIGATION with a real back-stack, so "back" and
+   "Settings > Done" return to wherever you actually came from.
+--------------------------------------------------------- */
+let screenHistory = [];
+function showScreen(name, opts){
+  opts = opts || {};
+  const curEl = document.querySelector('.screen.active');
+  const curName = curEl ? curEl.id.replace('screen-','') : null;
+  if(!opts.noHistory && curName && curName!==name) screenHistory.push(curName);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+}
+function goBack(){
+  const prev = screenHistory.pop();
+  showScreen(prev || 'home', {noHistory:true});
+}
+
+/* ---------------------------------------------------------
+   MENU / GRID BUILDING (with live-rendered previews)
+--------------------------------------------------------- */
+function buildStationCard(g, onClick){
+  const card = document.createElement('div');
+  card.className='card';
+  const preview = document.createElement('canvas');
+  preview.className='card-preview'; preview.width=640; preview.height=420;
+  card.appendChild(preview);
+  const info = document.createElement('div');
+  info.innerHTML = `<span class="num">STATION</span><h3>${g.title}</h3><p>${g.blurb}</p>`;
+  card.appendChild(info);
+  card.addEventListener('click', onClick);
+  try{ bindCanvas(preview); g.render('easy'); bindCanvas(canvas); }catch(e){ bindCanvas(canvas); }
+  return card;
+}
+const individualGrid = document.getElementById('individualGrid');
+const eyetestGrid = document.getElementById('eyetestGrid');
+GAMES.forEach(g=>{
+  individualGrid.appendChild(buildStationCard(g, ()=>startIndividual(g.id)));
+  eyetestGrid.appendChild(buildStationCard(g, ()=>startEyeTest(g.id)));
+});
+
+document.querySelectorAll('.modecard').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    const mode = el.dataset.mode;
+    if(mode==='full') startFullGame();
+    else if(mode==='individual') showScreen('individualPicker');
+    else if(mode==='eyetest') showScreen('eyetestPicker');
+  });
+});
+
+document.getElementById('settingsBtn').addEventListener('click', ()=>{ renderSettingsScreen(); showScreen('settings'); });
+document.getElementById('settingsDone').addEventListener('click', ()=>goBack());
+
+document.getElementById('hiddenBack').addEventListener('click', ()=>{
+  const cur = document.querySelector('.screen.active').id.replace('screen-','');
+  if(cur==='play'){
+    if(activeTimerInterval){ clearInterval(activeTimerInterval); activeTimerInterval=null; }
+    clearPendingStep();
+    document.getElementById('transitionOverlay').style.display='none';
+    document.getElementById('pauseOverlay').style.display='none';
+    paused=false; timerRunning=false;
+    if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  }
+  goBack();
+});
+
+/* ---------------------------------------------------------
+   SETTINGS SCREEN
+--------------------------------------------------------- */
+const TIMER_OPTIONS = [1,3,5,7,10,15,20,30];
+const ROUND_OPTIONS = [1,3,5,7,10,15,20,30,40,50,75,100,200];
+const MINUTE_OPTIONS = [0.5,1,3,5,10,15,20,30,45,60,90,120];
+
+function formatMinutes(v){
+  if(v<1) return Math.round(v*60)+'S';
+  if(v<60) return v+' MIN';
+  return (v/60)+' HR';
+}
+function renderPills(containerId, options, currentVal, onPick, formatFn){
+  const c = document.getElementById(containerId);
+  c.innerHTML='';
+  options.forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='pill'+(opt===currentVal?' active':'');
+    b.textContent = formatFn ? formatFn(opt) : opt;
+    b.addEventListener('click', ()=>{ onPick(opt); persistSettings(); renderSettingsScreen(); });
+    c.appendChild(b);
+  });
+}
+function renderSettingsScreen(){
+  renderPills('timerOptions', TIMER_OPTIONS, settings.timerSeconds, v=>settings.timerSeconds=v, v=>v+'s');
+  renderPills('sessionTypeOptions', ['rounds','time','infinity'], settings.sessionType, v=>settings.sessionType=v,
+    v=> v==='rounds'?'BY ROUNDS': v==='time' ? 'BY TIME' : 'INFINITE');
+  const valueRow = document.getElementById('sessionValueOptions');
+  if(settings.sessionType==='infinity'){
+    valueRow.style.display='none'; valueRow.innerHTML='';
+  } else {
+    valueRow.style.display='flex';
+    if(settings.sessionType==='rounds') renderPills('sessionValueOptions', ROUND_OPTIONS, settings.sessionRounds, v=>settings.sessionRounds=v, v=>v+' RD');
+    else renderPills('sessionValueOptions', MINUTE_OPTIONS, settings.sessionMinutes, v=>settings.sessionMinutes=v, formatMinutes);
+  }
+  renderPills('paceOptions', ['fast','average','slow'], settings.pace, v=>settings.pace=v, v=>v.toUpperCase());
+  renderPills('partyOptions', [true,false], settings.soloMode, v=>settings.soloMode=v, v=> v ? 'SOLO — TAP ANSWERS' : 'FRIENDS — JUST WATCH');
+  renderPills('narratorOptions', [true,false], settings.narratorOn, v=>settings.narratorOn=v, v=> v ? 'NARRATOR ON' : 'NARRATOR OFF');
+
+  const musicBlock = document.getElementById('musicBlock');
+  if(availableTracks.length===0){
+    musicBlock.style.display='none';
+  } else {
+    musicBlock.style.display='block';
+    const c = document.getElementById('musicOptions');
+    c.innerHTML='';
+    const offBtn = document.createElement('button');
+    offBtn.className='pill'+(settings.musicTrack===null?' active':'');
+    offBtn.textContent='OFF';
+    offBtn.addEventListener('click', ()=>{ stopMusic(); renderSettingsScreen(); });
+    c.appendChild(offBtn);
+    availableTracks.forEach(t=>{
+      const b=document.createElement('button');
+      b.className='pill'+(settings.musicTrack===t.index?' active':'');
+      b.textContent = `TRACK ${t.index}`;
+      b.addEventListener('click', ()=>{ playTrack(t.index); renderSettingsScreen(); });
+      c.appendChild(b);
+    });
+  }
+}
+
+/* ---------------------------------------------------------
+   SHARED INPUT / REVEAL HELPERS
+--------------------------------------------------------- */
+const choicesDiv = document.getElementById('choices');
+const feedback = document.getElementById('feedback');
+
+function clearFeedbackUI(){
+  feedback.textContent=''; feedback.className='feedback';
+  choicesDiv.innerHTML='';
+  canvas.onclick=null; canvas.style.cursor='default';
+  document.getElementById('eyetestAgainBtn').style.display='none';
+  currentMultiselectSubmit = null;
+}
+function renderChoiceButtons(list, callback){
+  choicesDiv.innerHTML='';
+  list.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='choice'; b.textContent=c.label;
+    b.addEventListener('click', ()=>callback(c.correct));
+    choicesDiv.appendChild(b);
+  });
+}
+function renderMultiSelectButtons(options, callback){
+  choicesDiv.innerHTML='';
+  const selected = new Set();
+  const buttons = [];
+  options.forEach((o,idx)=>{
+    const b=document.createElement('button');
+    b.className='choice'; b.textContent=o.label;
+    b.addEventListener('click', ()=>{
+      if(selected.has(idx)){ selected.delete(idx); b.classList.remove('selected'); }
+      else { selected.add(idx); b.classList.add('selected'); }
+    });
+    choicesDiv.appendChild(b);
+    buttons.push(b);
+  });
+  function doSubmit(){
+    let allCorrect = true;
+    options.forEach((o,idx)=>{
+      const isSel = selected.has(idx);
+      buttons[idx].disabled = true;
+      if(o.correct && isSel) buttons[idx].classList.add('mark-good');
+      else if(o.correct && !isSel){ buttons[idx].classList.add('mark-wrong'); allCorrect=false; }
+      else if(!o.correct && isSel){ buttons[idx].classList.add('mark-wrong'); allCorrect=false; }
+    });
+    if(submitBtn.parentNode) submitBtn.remove();
+    currentMultiselectSubmit = null;
+    callback(allCorrect);
+  }
+  const submitBtn=document.createElement('button');
+  submitBtn.className='choice'; submitBtn.style.borderColor='var(--accent)'; submitBtn.textContent='SUBMIT';
+  submitBtn.addEventListener('click', doSubmit);
+  choicesDiv.appendChild(submitBtn);
+  currentMultiselectSubmit = doSubmit;
+}
+function setupInputForRound(gameObj, solo, callback){
+  currentMultiselectSubmit = null;
+  if(!solo) return;
+  if(gameObj.type==='click'){
+    canvas.style.cursor='pointer';
+    canvas.onclick = (e)=>{ const pt = canvasPoint(e); callback(gameObj.handleClick(pt)); };
+  } else if(gameObj.type==='multiselect'){
+    renderMultiSelectButtons(gameObj.choices(), callback);
+  } else {
+    renderChoiceButtons(gameObj.choices(), callback);
+  }
+}
+function disableInput(gameObj){
+  canvas.onclick=null; canvas.style.cursor='default';
+  if(!gameObj || gameObj.type!=='multiselect'){ choicesDiv.innerHTML=''; }
+}
+function revealAnswer(gameObj, wasCorrect, solo){
+  gameObj.drawHighlight();
+  const caption = gameObj.getCaption();
+  if(solo && wasCorrect!==null){
+    feedback.textContent = (wasCorrect ? 'CORRECT — ' : 'MISSED — ') + caption;
+    feedback.className = 'feedback ' + (wasCorrect ? 'good' : 'bad');
+  } else {
+    feedback.textContent = caption;
+    feedback.className = 'feedback';
+  }
+}
+
+/* ---------------------------------------------------------
+   STAGE BAR (persistent, non-overlapping info: progress on the
+   left, timer/title/difficulty pill + pause/fullscreen on the right)
+--------------------------------------------------------- */
+const fsSupported = !!(document.fullscreenEnabled);
+if(!fsSupported) document.getElementById('fsBtn').style.display='none';
+function toggleFullscreen(){
+  const stage = document.getElementById('pgStage');
+  if(!document.fullscreenElement){
+    stage.requestFullscreen().catch(()=>{});
+    if(screen.orientation && screen.orientation.lock){ screen.orientation.lock('landscape').catch(()=>{}); }
+  } else {
+    document.exitFullscreen().catch(()=>{});
+  }
+}
+document.getElementById('fsBtn').addEventListener('click', toggleFullscreen);
+document.addEventListener('fullscreenchange', ()=>{
+  document.getElementById('fsBtn').textContent = document.fullscreenElement ? '⤢' : '⛶';
+});
+
+function updateStagebar(){
+  const timerNumEl = document.getElementById('stageTimerNum');
+  const titleEl = document.getElementById('stageTitleText');
+  const pillEl = document.getElementById('stageDiffPill');
+  const progWrap = document.getElementById('progressWrap');
+  const progInf = document.getElementById('progressInf');
+
+  if(playMode==='eyetest'){
+    timerNumEl.style.display='none';
+    progWrap.style.display='none'; progInf.style.display='none';
+    titleEl.textContent = gameById(eyetest.station).title;
+    pillEl.textContent = DIFF_LABEL[eyetest.difficulty];
+    pillEl.className = 'diffpill' + (EXTREME_DIFFS.includes(eyetest.difficulty)?' extreme':'');
+  } else {
+    timerNumEl.style.display='inline';
+    titleEl.textContent = currentGameObj.title;
+    pillEl.textContent = DIFF_LABEL[currentDiff];
+    pillEl.className = 'diffpill' + (EXTREME_DIFFS.includes(currentDiff)?' extreme':'');
+    if(settings.sessionType==='infinity'){ progWrap.style.display='none'; progInf.style.display='inline'; }
+    else {
+      progInf.style.display='none'; progWrap.style.display='block';
+      let pct=0;
+      if(settings.sessionType==='rounds') pct = Math.min(100,(session.roundsPlayed/settings.sessionRounds)*100);
+      else pct = Math.min(100, ((Date.now()-session.startTime)/(settings.sessionMinutes*60000))*100);
+      document.getElementById('progressBar').style.width = pct+'%';
+    }
+  }
+}
+
+/* ---------------------------------------------------------
+   PAUSE — halts BOTH the per-round timer AND the queued
+   transition/reveal step, so nothing advances while paused.
+--------------------------------------------------------- */
+function pauseGame(){
+  if(paused) return;
+  paused = true;
+  pausedWhileRunning = timerRunning;
+  if(pausedWhileRunning) pauseTimerLoop();
+  pausePendingStep();
+  document.getElementById('pauseOverlay').style.display='flex';
+  document.getElementById('pauseBtn').textContent = '►';
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+function resumeGame(){
+  if(!paused) return;
+  paused = false;
+  document.getElementById('pauseOverlay').style.display='none';
+  document.getElementById('pauseBtn').textContent = '❚❚';
+  if(pausedWhileRunning) resumeTimerLoop();
+  resumePendingStep();
+}
+document.getElementById('pauseBtn').addEventListener('click', ()=>{ paused ? resumeGame() : pauseGame(); });
+document.getElementById('resumeBtn').addEventListener('click', resumeGame);
+document.getElementById('pauseSettingsBtn').addEventListener('click', ()=>{ renderSettingsScreen(); showScreen('settings'); });
+document.getElementById('pauseHomeBtn').addEventListener('click', ()=>{
+  if(activeTimerInterval){ clearInterval(activeTimerInterval); activeTimerInterval=null; }
+  clearPendingStep();
+  paused=false; timerRunning=false;
+  document.getElementById('pauseOverlay').style.display='none';
+  if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  screenHistory = [];
+  showScreen('home', {noHistory:true});
+});
+
+/* ---------------------------------------------------------
+   PLAY SCREEN MODE SWITCHING
+--------------------------------------------------------- */
+function enterPlayScreen(mode){
+  playMode = mode;
+  showScreen('play');
+  const isEyetest = mode==='eyetest';
+  document.getElementById('pgDiffBar').style.display = isEyetest ? 'flex' : 'none';
+  document.getElementById('pgTimerWrap').style.display = isEyetest ? 'none' : 'block';
+  document.getElementById('eyetestAgainBtn').style.display='none';
+  document.getElementById('pauseOverlay').style.display='none';
+  document.getElementById('pauseBtn').textContent = '❚❚';
+  paused=false; timerRunning=false;
+  clearPendingStep();
+}
+
+/* ---------------------------------------------------------
+   TIMER LOOP (pause/resume-safe)
+--------------------------------------------------------- */
+function startTimerLoop(total, onTick, onExpire){
+  currentRemaining = total; currentTotal = total;
+  currentTimerTick = onTick; currentTimerExpire = onExpire;
+  timerRunning = true;
+  onTick(currentRemaining, currentTotal);
+  activeTimerInterval = setInterval(()=>{
+    currentRemaining -= 0.1;
+    currentTimerTick(Math.max(0,currentRemaining), currentTotal);
+    if(currentRemaining<=0){
+      clearInterval(activeTimerInterval); activeTimerInterval=null;
+      timerRunning = false;
+      currentTimerExpire();
+    }
+  },100);
+}
+function pauseTimerLoop(){
+  if(activeTimerInterval){ clearInterval(activeTimerInterval); activeTimerInterval=null; }
+}
+function resumeTimerLoop(){
+  if(currentRemaining==null || currentTimerTick==null) return;
+  timerRunning = true;
+  activeTimerInterval = setInterval(()=>{
+    currentRemaining -= 0.1;
+    currentTimerTick(Math.max(0,currentRemaining), currentTotal);
+    if(currentRemaining<=0){
+      clearInterval(activeTimerInterval); activeTimerInterval=null;
+      timerRunning = false;
+      currentTimerExpire();
+    }
+  },100);
+}
+
+/* ---------------------------------------------------------
+   TIMED ROUND ENGINE (Full Game + Individual Station)
+--------------------------------------------------------- */
+function transitionText(gameObj, diff){
+  let line;
+  if(!session.seenStations.has(gameObj.id)){
+    session.seenStations.add(gameObj.id);
+    line = FLAVOR_INTRO[gameObj.id];
+  } else {
+    line = pick(FLAVOR[gameObj.id]);
+  }
+  const diffLine = pick(DIFF_ANNOUNCE[diff]);
+  return {line, diffLine};
+}
+function showTransition(gameObj, diff, cb){
+  const {line, diffLine} = transitionText(gameObj, diff);
+  document.getElementById('transDiff').textContent = DIFF_LABEL[diff];
+  document.getElementById('transDiff').style.color = EXTREME_DIFFS.includes(diff) ? 'var(--bad)' : 'var(--accent)';
+  document.getElementById('transTitle').textContent = gameObj.title;
+  document.getElementById('transFlavor').textContent = line;
+  document.getElementById('transitionOverlay').style.display='flex';
+  speakForRound(gameObj, diffLine, line);
+  scheduleGameStep(()=>{ document.getElementById('transitionOverlay').style.display='none'; cb(); }, PACE_CONFIG[settings.pace].transition);
+}
+function updateTimerUI(remaining, total){
+  document.getElementById('stageTimerNum').textContent = Math.max(0,remaining).toFixed(2)+'s';
+  const pct = Math.max(0, remaining/total*100);
+  const bar = document.getElementById('pgTimerBar');
+  bar.style.width = pct+'%';
+  bar.style.background = remaining < total*0.3 ? 'var(--bad)' : 'var(--accent)';
+  if(session && settings.sessionType==='time') updateStagebar();
+}
+function actualRunTimedRound(gameObj, diff, onDone){
+  currentGameObj = gameObj; currentDiff = diff;
+  document.getElementById('pgPrompt').textContent = gameObj.prompt;
+  clearFeedbackUI();
+  gameObj.render(diff);
+  updateStagebar();
+
+  let answered=false, wasCorrect=null;
+  const solo = settings.soloMode;
+
+  setupInputForRound(gameObj, solo, (correct)=>{
+    if(answered) return;
+    answered=true; wasCorrect=correct;
+    finish();
+  });
+
+  startTimerLoop(settings.timerSeconds, updateTimerUI, ()=>{
+    if(!answered){
+      if(gameObj.type==='multiselect' && currentMultiselectSubmit){
+        currentMultiselectSubmit();
+      } else {
+        answered=true; wasCorrect = solo ? false : null; finish();
+      }
+    }
+  });
+
+  function finish(){
+    pauseTimerLoop();
+    timerRunning = false;
+    disableInput(gameObj);
+    revealAnswer(gameObj, wasCorrect, solo);
+    sessionScore.total++;
+    if(solo && wasCorrect) sessionScore.correct++;
+    scheduleGameStep(onDone, PACE_CONFIG[settings.pace].reveal);
+  }
+}
+function runTimedRound(gameObj, diff, onDone){
+  showTransition(gameObj, diff, ()=>actualRunTimedRound(gameObj, diff, onDone));
+}
+function sessionLimitReached(){
+  if(settings.sessionType==='infinity') return false;
+  if(settings.sessionType==='rounds') return session.roundsPlayed >= settings.sessionRounds;
+  return (Date.now()-session.startTime) >= settings.sessionMinutes*60000;
+}
+function nextRound(){
+  if(sessionLimitReached()){ showSummary(); return; }
+  const gameObj = gameById(session.station);
+  const diff = DIFFS[session.diffIndex % DIFFS.length];
+  runTimedRound(gameObj, diff, ()=>{
+    session.roundsPlayed++;
+    session.diffIndex++;
+    if(session.mode==='full' && session.diffIndex >= DIFFS.length){
+      session.diffIndex = 0;
+      const others = GAME_IDS.filter(id=>id!==session.station);
+      session.station = pick(others);
+    }
+    nextRound();
+  });
+}
+function startFullGame(){
+  enterPlayScreen('full');
+  sessionScore = {correct:0, total:0};
+  session = { mode:'full', station: pick(GAME_IDS), diffIndex:0, roundsPlayed:0, startTime:Date.now(), seenStations:new Set() };
+  nextRound();
+}
+function startIndividual(stationId){
+  enterPlayScreen('individual');
+  sessionScore = {correct:0, total:0};
+  session = { mode:'individual', station: stationId, diffIndex:0, roundsPlayed:0, startTime:Date.now(), seenStations:new Set() };
+  nextRound();
+}
+function showSummary(){
+  showScreen('summary');
+  let txt = `You watched ${session.roundsPlayed} round${session.roundsPlayed===1?'':'s'}.`;
+  if(settings.soloMode) txt += ` Final score: ${sessionScore.correct} / ${sessionScore.total} correct.`;
+  document.getElementById('summaryText').textContent = txt;
+}
+document.getElementById('summaryAgain').addEventListener('click', ()=>{
+  if(session.mode==='full') startFullGame(); else startIndividual(session.station);
+});
+document.getElementById('summaryHome').addEventListener('click', ()=>{
+  screenHistory = [];
+  showScreen('home', {noHistory:true});
+});
+
+/* ---------------------------------------------------------
+   EYE TEST (untimed, always solo, manual advance)
+--------------------------------------------------------- */
+function buildEyetestDiffBar(){
+  const bar = document.getElementById('pgDiffBar');
+  bar.innerHTML='';
+  DIFFS.forEach(d=>{
+    const b=document.createElement('button');
+    b.className='diffbtn'+(d===eyetest.difficulty?' active':'')+(EXTREME_DIFFS.includes(d)?' extreme':'');
+    b.textContent=DIFF_LABEL[d];
+    b.addEventListener('click', ()=>{ eyetest.difficulty=d; buildEyetestDiffBar(); runEyetestRound(); });
+    bar.appendChild(b);
+  });
+}
+function runEyetestRound(){
+  const gameObj = gameById(eyetest.station);
+  document.getElementById('pgPrompt').textContent = gameObj.prompt;
+  clearFeedbackUI();
+  gameObj.render(eyetest.difficulty);
+  updateStagebar();
+  setupInputForRound(gameObj, true, (correct)=>{
+    disableInput(gameObj);
+    revealAnswer(gameObj, correct, true);
+    document.getElementById('eyetestAgainBtn').style.display='inline-block';
+  });
+}
+function startEyeTest(stationId){
+  eyetest = { station: stationId, difficulty:'easy' };
+  enterPlayScreen('eyetest');
+  buildEyetestDiffBar();
+  runEyetestRound();
+}
+document.getElementById('eyetestAgainBtn').addEventListener('click', ()=>{
+  if(playMode==='eyetest') runEyetestRound();
+});
+</script>
+</body>
+</html>
