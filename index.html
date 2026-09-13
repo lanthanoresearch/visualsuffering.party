@@ -135,33 +135,163 @@
     background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
     opacity:.35; cursor:pointer; transition:opacity .15s; z-index:50; user-select:none;}
   .hiddenback:hover, .hiddenback:focus{opacity:1;}
+  .modegrid{gap:16px;}
+  .modecard{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(17,26,46,.98),rgba(13,19,35,.98));box-shadow:0 12px 34px rgba(0,0,0,.18);}
+  .modecard::after{content:'';position:absolute;inset:auto -30px -55px auto;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,77,109,.16),transparent 68%);pointer-events:none;}
+  .modecard:hover{transform:translateY(-3px);box-shadow:0 16px 42px rgba(0,0,0,.26);}
+  .modeicon{filter:drop-shadow(0 0 10px rgba(255,77,109,.22));}
+  .settingslink{box-shadow:0 8px 24px rgba(0,0,0,.16);}
+  /* party player */
+  html,body{width:100%;min-height:100%;overflow-x:hidden;}
+  body{padding:22px 16px 42px;}
+  #bgMusic{display:none;}
+  .wrap{max-width:1060px;}
+  #screen-play{width:100%;padding:0;}
+  .video-shell{width:100%;max-width:1060px;margin:0 auto;}
+  #pgStage{position:relative;width:100%;height:min(78dvh,760px);min-height:520px;padding:0;gap:0;overflow:hidden;background:#070a12;border:1px solid #253152;border-radius:18px;box-shadow:0 18px 70px rgba(0,0,0,.38);}
+  #pgStage:fullscreen{width:100vw;height:100dvh;min-height:0;max-height:none;border:0;border-radius:0;background:#05070d;}
+  .player-topline{position:absolute;inset:0 0 auto 0;z-index:12;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:24px 28px 16px;background:linear-gradient(180deg,rgba(5,7,13,.97),rgba(5,7,13,0));pointer-events:none;}
+  .player-meta{min-width:0;max-width:55%;}
+  .player-kicker{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--accent);font-weight:600;text-transform:uppercase;margin-bottom:5px;}
+  .player-mode{font-size:clamp(18px,2.3vw,28px);font-weight:700;line-height:1.05;margin-bottom:9px;}
+  .player-stats{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .session-length{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:4px 10px;border:1px solid var(--line);border-radius:12px;color:var(--muted);background:rgba(10,14,26,.75);}
+  .player-actions{display:flex;gap:8px;align-items:center;pointer-events:auto;position:relative;z-index:20;}
+  .miniicon,.pausebig{display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:var(--ink);background:rgba(11,15,27,.76);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);}
+  .miniicon{width:36px;height:36px;border-radius:10px;font-size:15px;}
+  .pausebig{width:46px;height:46px;border-radius:14px;font-size:15px;}
+  .miniicon:hover,.pausebig:hover{border-color:var(--accent);background:rgba(24,36,70,.9);}
+  .timerline{position:absolute;top:0;left:0;right:0;height:6px;z-index:15;background:rgba(255,255,255,.08);overflow:visible;}
+  .timerbar{height:100%;width:100%;background:var(--accent);transition:width .08s linear,background .15s;}
+  .round-time{position:absolute;right:28px;top:78px;z-index:16;width:46px;height:46px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(20px,3vw,30px);line-height:1;color:var(--ink);background:rgba(5,7,13,.55);border:2px solid rgba(255,255,255,.85);border-radius:50%;text-shadow:0 2px 10px rgba(0,0,0,.6);pointer-events:none;box-sizing:border-box;}
+  .round-time.pulse{animation:secondPulse .45s cubic-bezier(.2,.8,.2,1);}
+  @keyframes secondPulse{0%{transform:scale(.86);opacity:.35}45%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:1}}
+  .game-viewport{position:absolute;inset:0 0 46px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:78px 20px 6px;}
+  .game-copy{position:absolute; top:74px; right:16px; z-index:25; max-width:min(320px,78vw);
+    background:rgba(8,11,20,.96); border:1px solid rgba(255,255,255,.16); border-radius:12px;
+    padding:12px 14px; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.5;
+    letter-spacing:.02em; text-align:left; color:rgba(255,255,255,.86); pointer-events:none;
+    opacity:0; transform:translateY(-6px); transition:opacity .15s, transform .15s;
+    box-shadow:0 12px 34px rgba(0,0,0,.4);}
+  .game-copy.show{opacity:1; transform:translateY(0); pointer-events:auto;}
+  canvas{width:auto;height:auto;max-width:100%;max-height:100%;aspect-ratio:640/420;display:block;border-radius:10px;box-shadow:0 14px 45px rgba(0,0,0,.3);}
+  .answer-zone{position:absolute;left:18px;right:18px;bottom:48px;z-index:9;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
+  .answer-zone>*{pointer-events:auto;}
+  .choices{width:min(760px,94%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:stretch;}
+  .choice{font-size:11px;line-height:1.2;padding:10px 9px;min-height:42px;border-radius:10px;background:rgba(7,10,18,.9);backdrop-filter:blur(8px);text-align:center;display:flex;align-items:center;justify-content:center;}
+  .feedback{min-height:24px;font-size:11px;max-width:760px;text-shadow:0 2px 12px #000;}
+  .again{display:none;border-radius:9px;padding:8px 14px;}
+  .player-footer{position:absolute;left:18px;right:18px;bottom:16px;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none;}
+  .progress-zone{display:flex;align-items:center;min-width:0;pointer-events:auto;}
+  .progresswrap{width:140px;height:4px;background:rgba(255,255,255,.12);border-radius:4px;overflow:hidden;}
+  .progressbar{height:100%;width:0;background:var(--accent);}
+  #progressInf{font-size:18px;color:var(--accent);line-height:1;}
+  .diffbar{margin:0;display:flex;gap:6px;pointer-events:auto;}
+  .diffbtn{font-size:10px;padding:6px 9px;border-radius:10px;background:rgba(7,10,18,.76);backdrop-filter:blur(8px);}
+  .transition{position:absolute;inset:0;z-index:30;border-radius:inherit;padding:30px;background:radial-gradient(circle at center,rgba(19,27,49,.97),rgba(4,6,12,.985));}
+  .trans-diff{font-size:10px;letter-spacing:.2em;text-transform:uppercase;}
+  .trans-title{font-size:clamp(28px,5vw,54px);max-width:800px;}
+  .trans-flavor{font-size:clamp(13px,1.7vw,18px);max-width:48ch;line-height:1.5;}
+  .pauseoverlay{position:absolute;inset:0;z-index:40;border-radius:inherit;background:rgba(3,5,9,.72);backdrop-filter:blur(14px);}
+  .pause-card{width:min(460px,calc(100% - 40px));padding:32px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:rgba(13,18,33,.95);box-shadow:0 24px 80px rgba(0,0,0,.45);}
+  .pause-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--accent);margin-bottom:4px;}
+  .pause-card h3{margin:4px 0 8px;font-size:clamp(26px,4vw,40px);}
+  .pause-card p{margin:0 0 18px;color:var(--muted);font-size:13px;}
+  .pausebtnrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start;}
+  .primarybtn,.backbtn{border-radius:10px;}
+  #pgStage:fullscreen .player-topline{padding:22px 24px 14px;}
+  #pgStage:fullscreen .game-viewport{inset:0;padding:78px 28px 44px;justify-content:center;gap:6px;}
+  #pgStage:fullscreen canvas{width:min(88vw,calc((100dvh - 124px) * 1.5238));height:auto;max-width:92vw;max-height:calc(100dvh - 124px);}
+  #pgStage:fullscreen .game-copy{max-width:820px;margin-top:0;}
+  #pgStage:fullscreen .answer-zone{bottom:16px;left:20px;right:20px;}
+  #pgStage:fullscreen .round-time{right:24px;top:82px;transform:none;width:46px;}
+  #pgStage:fullscreen .player-footer{bottom:14px;}
+  #pgStage:fullscreen #fsBtn{display:flex;}
+  #pgStage:fullscreen .diffbar{display:none;}
+  #pgStage:fullscreen .game-copy{font-size:10px;}
+  body.playing{overflow:hidden;padding:10px;}
+  body.playing .hiddenback{display:none;}
+  body.playing .wrap{max-width:none;width:100%;height:calc(100dvh - 20px);}
+  body.playing #screen-play{height:100%;}
+  body.playing .video-shell{height:100%;max-width:none;}
+  body.playing #pgStage{height:100%;min-height:0;}
+  @media (max-width:760px){
+    body{padding:14px 10px 28px;}
+    #pgStage{height:calc(100dvh - 28px);min-height:430px;border-radius:14px;}
+    .player-topline{padding:18px 16px 12px;}
+    .player-meta{max-width:73%;}
+    .player-mode{font-size:19px;}
+    .player-actions{gap:6px;}
+    .miniicon{width:32px;height:32px;border-radius:9px;}
+    .pausebig{width:40px;height:40px;border-radius:11px;}
+    .round-time{right:16px;top:70px;font-size:22px;width:40px;height:40px;}
+    .game-viewport{inset:0 0 50px 0;padding:58px 10px 6px;}
+    .game-copy{width:100%;font-size:9px;}
+    .answer-zone{bottom:50px;left:8px;right:8px;}
+    .choices{max-width:100%;gap:5px;}
+    .choice{font-size:10px;padding:7px 8px;border-radius:8px;}
+    .player-footer{left:10px;right:10px;bottom:12px;}
+    .progresswrap{width:90px;}
+    #pgStage:fullscreen .game-viewport{inset:0;padding:58px 8px 40px;}
+    #pgStage:fullscreen canvas{width:min(94vw,calc((100dvh - 110px) * 1.5238));max-width:96vw;max-height:calc(100dvh - 110px);}
+    #pgStage:fullscreen .round-time{right:16px;top:72px;font-size:24px;width:42px;}
+    #pgStage:fullscreen .answer-zone{bottom:14px;}
+  }
+
+  #screen-title{display:none;}
+  .screen.active#screen-title{display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:78vh;text-align:center;position:relative;overflow:hidden;}
+  .title-decor{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+  .td-dot{position:absolute;border-radius:50%;opacity:.5;filter:blur(1px);animation:floatDot 6s ease-in-out infinite;}
+  .td-1{width:70px;height:70px;background:#ff2ec8;top:8%;left:10%;animation-delay:0s;}
+  .td-2{width:50px;height:50px;background:#3ddc97;top:66%;left:8%;animation-delay:1.2s;}
+  .td-3{width:90px;height:90px;background:#4d8bff;top:16%;right:9%;animation-delay:.6s;}
+  .td-4{width:40px;height:40px;background:#fff200;top:74%;right:14%;animation-delay:1.8s;}
+  .td-5{width:60px;height:60px;background:#ff6b4d;top:44%;left:47%;animation-delay:2.4s;}
+  @keyframes floatDot{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-18px) scale(1.08);}}
+  .title-card{position:relative;z-index:2;max-width:560px;padding:20px;}
+  .title-h1{font-size:clamp(40px,10vw,64px);margin:6px 0 14px;}
+  .title-sub{color:var(--muted);font-size:16px;margin:0 0 30px;}
+  .title-play{font-size:16px;padding:16px 40px;border-radius:40px;letter-spacing:.1em;cursor:pointer;}
 </style>
 </head>
 <body>
+<audio id="bgMusic" src="Curquis%20Groove.mp3" preload="auto" loop></audio>
 <div class="wrap">
 
   <div class="hiddenback" id="hiddenBack" title="back">&#8249;</div>
 
-  <section class="screen active" id="screen-home">
+  <section class="screen active" id="screen-title">
+    <div class="title-decor" aria-hidden="true">
+      <span class="td-dot td-1"></span>
+      <span class="td-dot td-2"></span>
+      <span class="td-dot td-3"></span>
+      <span class="td-dot td-4"></span>
+      <span class="td-dot td-5"></span>
+    </div>
+    <div class="title-card">
+      <p class="eyeline">PERCEPTION PARTY • ROUND LAB</p>
+      <h1 class="title-h1">The Optic Bench</h1>
+      <p class="title-sub">Seven illusions. Your eyes will lie to you. Trust them anyway.</p>
+      <button class="primarybtn title-play" id="titlePlayBtn">&#9658; PLAY</button>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-home">
     <header class="top">
-      <p class="eyeline">PERCEPTION TRIALS — ROOM 1</p>
+      <p class="eyeline">PERCEPTION PARTY • ROUND LAB</p>
       <h1>The Optic Bench</h1>
-      <p>Seven stations, three ways to play. Watch it like a show, race a friend, or train your own eye.</p>
+      <p>Seven visual trials. Two ways to play. Pick your poison and trust your first impression.</p>
     </header>
     <div class="modegrid">
       <div class="modecard" data-mode="full">
         <div class="modeicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></div>
-        <div><h3>Full Game</h3><p>One endless run. Random station, ramps through six difficulty stages, then jumps to a new station. Built for groups.</p></div>
+        <div><h3>Full Game</h3><p>A shuffled tour through every trial. Each one gets its moment before the bench deals the deck again.</p></div>
         <span class="arrow">&rarr;</span>
       </div>
       <div class="modecard" data-mode="individual">
         <div class="modeicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></div>
-        <div><h3>Individual Station</h3><p>Pick one of the seven trials and run it on its own, ramping through difficulty on a loop.</p></div>
-        <span class="arrow">&rarr;</span>
-      </div>
-      <div class="modecard" data-mode="eyetest">
-        <div class="modeicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg></div>
-        <div><h3>Eye Test</h3><p>No timer, no crowd. Pick a station and difficulty, click your answer, see if you were right.</p></div>
+        <div><h3>One Trial</h3><p>Choose one trial and push it through the difficulty ladder. Set the round timer to infinite for a no-clock eye test.</p></div>
         <span class="arrow">&rarr;</span>
       </div>
     </div>
@@ -171,9 +301,9 @@
   <section class="screen" id="screen-settings">
     <h2>Settings</h2>
     <div class="setting-block">
-      <p class="setlabel">ANSWER TIME PER ROUND</p>
+      <p class="setlabel">ROUND TIME</p>
       <div class="pillrow" id="timerOptions"></div>
-      <p class="settingnote">Applies to Full Game and Individual Station. Eye Test is always untimed.</p>
+      <p class="settingnote">Set it to the infinity symbol for no clock at all - you reveal the answer yourself whenever you're ready.</p>
     </div>
     <div class="setting-block">
       <p class="setlabel">SESSION LENGTH</p>
@@ -183,71 +313,90 @@
     <div class="setting-block">
       <p class="setlabel">PACE BETWEEN ROUNDS</p>
       <div class="pillrow" id="paceOptions"></div>
-      <p class="settingnote">Controls the transition and reveal time between rounds — never your answer timer.</p>
+      <p class="settingnote">Controls the showmanship between rounds. Your answer clock stays separate.</p>
     </div>
-    <div class="setting-block">
+    <div class="setting-block" style="display:none;">
       <p class="setlabel">PLAY STYLE</p>
       <div class="pillrow" id="partyOptions"></div>
-      <p class="settingnote">Solo: click your answer(s) each round. Friends: no input — the round just plays out and reveals the answer.</p>
+      <p class="settingnote">Solo gives you controls. Watch mode turns the board into a show with no answer buttons.</p>
     </div>
     <div class="setting-block">
-      <p class="setlabel">NARRATOR VOICE</p>
+      <p class="setlabel">NARRATOR</p>
       <div class="pillrow" id="narratorOptions"></div>
-      <p class="settingnote">Your browser's built-in text-to-speech. It has opinions, and knows when to shut up.</p>
+      <p class="settingnote">Uses your browser voice. Turn it off whenever the machine gets too talkative.</p>
     </div>
-    <div class="setting-block" id="musicBlock" style="display:none;">
+    <div class="setting-block" id="musicBlock">
       <p class="setlabel">BACKGROUND MUSIC</p>
       <div class="pillrow" id="musicOptions"></div>
+      <p class="settingnote">Curquis Groove loops during play.</p>
     </div>
     <button class="backbtn" id="settingsDone">DONE</button>
   </section>
 
   <section class="screen" id="screen-individualPicker">
-    <h2>Pick a Station</h2>
+    <h2>Pick a Trial</h2>
     <div class="grid" id="individualGrid"></div>
   </section>
 
   <section class="screen" id="screen-eyetestPicker">
-    <h2>Eye Test — Pick a Station</h2>
+    <h2>Eye Test  Pick a Trial</h2>
     <div class="grid" id="eyetestGrid"></div>
   </section>
 
   <section class="screen" id="screen-play">
-    <p class="prompt" id="pgPrompt"></p>
-    <div class="diffbar" id="pgDiffBar"></div>
-    <div class="stage" id="pgStage">
-      <div class="timerwrap" id="pgTimerWrap"><div class="timerbar" id="pgTimerBar"></div></div>
-      <div class="stagebar">
-        <div class="stagebar-left">
-          <div class="progresswrap" id="progressWrap"><div class="progressbar" id="progressBar"></div></div>
-          <span id="progressInf" style="display:none;">&#8734;</span>
-        </div>
-        <div class="stagebar-right">
-          <div class="stagebar-righttop">
-            <button class="miniicon" id="pauseBtn" title="pause">&#10073;&#10073;</button>
-            <button class="miniicon" id="fsBtn" title="fullscreen">&#9974;</button>
-            <span class="stagetimer" id="stageTimerNum"></span>
+    <div class="video-shell" id="videoShell">
+      <div class="stage" id="pgStage">
+        <div class="player-topline">
+          <div class="player-meta">
+            <div class="player-kicker">THE OPTIC BENCH</div>
+            <div class="player-mode" id="stageTitleText"></div>
+            <div class="player-stats">
+              <span class="diffpill" id="stageDiffPill"></span>
+              <span class="session-length" id="stageLengthText"></span>
+            </div>
           </div>
-          <div class="stagetitle" id="stageTitleText"></div>
-          <div class="diffpill" id="stageDiffPill"></div>
+          <div class="player-actions">
+            <button class="miniicon" id="infoBtn" title="About this trial" aria-label="About this trial">&#9432;</button>
+            <button class="miniicon" id="fsBtn" title="fullscreen" aria-label="Fullscreen">&#9974;</button>
+            <button class="pausebig" id="pauseBtn" title="pause" aria-label="Pause">&#10073;&#10073;</button>
+          </div>
         </div>
-      </div>
-      <canvas id="canvas" width="640" height="420"></canvas>
-      <div class="choices" id="choices"></div>
-      <div class="feedback" id="feedback"></div>
-      <button class="again" id="eyetestAgainBtn">NEXT &rarr;</button>
-      <div class="transition" id="transitionOverlay">
-        <p class="trans-diff" id="transDiff"></p>
-        <h3 class="trans-title" id="transTitle"></h3>
-        <p class="trans-flavor" id="transFlavor"></p>
-      </div>
-      <div class="pauseoverlay" id="pauseOverlay">
-        <h3>Paused</h3>
-        <p>The board is hidden and the clock is stopped. No peeking.</p>
-        <div class="pausebtnrow">
-          <button class="primarybtn" id="resumeBtn">RESUME</button>
-          <button class="backbtn" id="pauseSettingsBtn">SETTINGS</button>
-          <button class="backbtn" id="pauseHomeBtn">QUIT TO HOME</button>
+        <div class="timerline">
+          <div class="timerbar" id="pgTimerBar"></div>
+          <div class="round-time" id="stageTimerNum" aria-live="polite">0</div>
+        </div>
+        <div class="game-viewport">
+          <div class="game-copy" id="pgPrompt"></div>
+          <canvas id="canvas" width="640" height="420"></canvas>
+        </div>
+        <div class="answer-zone">
+          <div class="choices" id="choices"></div>
+          <div class="feedback" id="feedback"></div>
+          <button class="again" id="eyetestAgainBtn">NEXT ROUND</button>
+        </div>
+        <div class="player-footer">
+          <div class="progress-zone">
+            <div class="progresswrap" id="progressWrap"><div class="progressbar" id="progressBar"></div></div>
+            <span id="progressInf" style="display:none;">&#8734;</span>
+          </div>
+          <div class="diffbar" id="pgDiffBar"></div>
+        </div>
+        <div class="transition" id="transitionOverlay">
+          <p class="trans-diff" id="transDiff"></p>
+          <h3 class="trans-title" id="transTitle"></h3>
+          <p class="trans-flavor" id="transFlavor"></p>
+        </div>
+        <div class="pauseoverlay" id="pauseOverlay">
+          <div class="pause-card">
+            <div class="player-kicker">PAUSED</div>
+            <h3>Eyes off the board</h3>
+            <p>The clock is stopped. The evidence is safely hidden.</p>
+            <div class="pausebtnrow">
+              <button class="primarybtn" id="resumeBtn">RESUME</button>
+              <button class="backbtn" id="pauseSettingsBtn">SETTINGS</button>
+              <button class="backbtn" id="pauseHomeBtn">HOME</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -387,59 +536,84 @@ function pathFor(type, cx, cy, s){
   ctx.beginPath();
   if(type==='star'){
     for(let i=0;i<10;i++){
-      const r = i%2===0 ? s : s*0.42;
-      const a = Math.PI/2 + i*Math.PI/5;
-      const x = cx + r*Math.cos(a), y = cy - r*Math.sin(a);
-      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      const r=i%2===0?s:s*0.52;
+      const a=-Math.PI/2+i*Math.PI/5;
+      const x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     }
     ctx.closePath();
   } else if(type==='heart'){
-    ctx.moveTo(cx, cy + s*0.6);
-    ctx.bezierCurveTo(cx - s*1.3, cy - s*0.4, cx - s*0.5, cy - s*1.3, cx, cy - s*0.4);
-    ctx.bezierCurveTo(cx + s*0.5, cy - s*1.3, cx + s*1.3, cy - s*0.4, cx, cy + s*0.6);
+    ctx.moveTo(cx,cy+s*0.72);
+    ctx.bezierCurveTo(cx-s*0.92,cy+s*0.18,cx-s*1.02,cy-s*0.58,cx-s*0.5,cy-s*0.86);
+    ctx.bezierCurveTo(cx-s*0.2,cy-s*1.02,cx-s*0.06,cy-s*0.78,cx,cy-s*0.48);
+    ctx.bezierCurveTo(cx+s*0.06,cy-s*0.78,cx+s*0.2,cy-s*1.02,cx+s*0.5,cy-s*0.86);
+    ctx.bezierCurveTo(cx+s*1.02,cy-s*0.58,cx+s*0.92,cy+s*0.18,cx,cy+s*0.72);
     ctx.closePath();
   } else if(type==='tree'){
-    ctx.moveTo(cx - s*0.15, cy + s*0.9); ctx.lineTo(cx + s*0.15, cy + s*0.9);
-    ctx.lineTo(cx + s*0.15, cy + s*0.3); ctx.lineTo(cx + s*0.6, cy + s*0.3);
-    ctx.lineTo(cx, cy - s*1.1); ctx.lineTo(cx - s*0.6, cy + s*0.3);
-    ctx.lineTo(cx - s*0.15, cy + s*0.3); ctx.closePath();
+    const top=cy-s*1.0, base=cy+s*0.82, trunk=s*0.18;
+    ctx.moveTo(cx,top);
+    ctx.quadraticCurveTo(cx-s*0.18,cy-s*0.58,cx-s*0.48,cy-s*0.25);
+    ctx.quadraticCurveTo(cx-s*0.26,cy-s*0.2,cx-s*0.66,cy+s*0.08);
+    ctx.quadraticCurveTo(cx-s*0.38,cy+s*0.08,cx-s*0.58,cy+s*0.36);
+    ctx.quadraticCurveTo(cx-s*0.26,cy+s*0.31,cx-s*0.34,cy+s*0.48);
+    ctx.lineTo(cx-trunk,base); ctx.lineTo(cx+trunk,base);
+    ctx.lineTo(cx+s*0.34,cy+s*0.48);
+    ctx.quadraticCurveTo(cx+s*0.26,cy+s*0.31,cx+s*0.58,cy+s*0.36);
+    ctx.quadraticCurveTo(cx+s*0.38,cy+s*0.08,cx+s*0.66,cy+s*0.08);
+    ctx.quadraticCurveTo(cx+s*0.26,cy-s*0.2,cx+s*0.48,cy-s*0.25);
+    ctx.quadraticCurveTo(cx+s*0.18,cy-s*0.58,cx,top);
+    ctx.closePath();
   } else if(type==='cloud'){
-    ctx.arc(cx - s*0.5, cy + s*0.15, s*0.55, 0, Math.PI*2);
-    ctx.arc(cx, cy - s*0.2, s*0.7, 0, Math.PI*2);
-    ctx.arc(cx + s*0.55, cy + s*0.1, s*0.5, 0, Math.PI*2);
+    const y=cy+s*0.12;
+    ctx.moveTo(cx-s*0.9,y+s*0.28);
+    ctx.quadraticCurveTo(cx-s*1.02,y-s*0.15,cx-s*0.68,y-s*0.24);
+    ctx.quadraticCurveTo(cx-s*0.56,y-s*0.75,cx-s*0.1,y-s*0.66);
+    ctx.quadraticCurveTo(cx+s*0.06,y-s*1.02,cx+s*0.48,y-s*0.72);
+    ctx.quadraticCurveTo(cx+s*0.82,y-s*0.7,cx+s*0.84,y-s*0.22);
+    ctx.quadraticCurveTo(cx+s*1.06,y-s*0.08,cx+s*0.9,y+s*0.28);
+    ctx.quadraticCurveTo(cx+s*0.15,y+s*0.5,cx-s*0.9,y+s*0.28);
     ctx.closePath();
   } else if(type==='triangle'){
-    ctx.moveTo(cx, cy - s); ctx.lineTo(cx + s*0.9, cy + s*0.8);
-    ctx.lineTo(cx - s*0.9, cy + s*0.8); ctx.closePath();
+    ctx.moveTo(cx,cy-s); ctx.quadraticCurveTo(cx+s*0.78,cy+s*0.42,cx+s*0.82,cy+s*0.72);
+    ctx.quadraticCurveTo(cx,cy+s*0.9,cx-s*0.82,cy+s*0.72);
+    ctx.quadraticCurveTo(cx-s*0.78,cy+s*0.42,cx,cy-s); ctx.closePath();
   } else if(type==='square'){
-    ctx.rect(cx - s*0.75, cy - s*0.75, s*1.5, s*1.5);
+    const q=s*0.72, r=s*0.1;
+    ctx.moveTo(cx-q+r,cy-q); ctx.lineTo(cx+q-r,cy-q);
+    ctx.quadraticCurveTo(cx+q,cy-q,cx+q,cy-q+r);
+    ctx.lineTo(cx+q,cy+q-r); ctx.quadraticCurveTo(cx+q,cy+q,cx+q-r,cy+q);
+    ctx.lineTo(cx-q+r,cy+q); ctx.quadraticCurveTo(cx-q,cy+q,cx-q,cy+q-r);
+    ctx.lineTo(cx-q,cy-q+r); ctx.quadraticCurveTo(cx-q,cy-q,cx-q+r,cy-q); ctx.closePath();
   } else if(type==='diamond'){
-    ctx.moveTo(cx, cy - s); ctx.lineTo(cx + s*0.75, cy);
-    ctx.lineTo(cx, cy + s); ctx.lineTo(cx - s*0.75, cy); ctx.closePath();
+    ctx.moveTo(cx,cy-s); ctx.quadraticCurveTo(cx+s*0.76,cy,cx,cy+s);
+    ctx.quadraticCurveTo(cx-s*0.76,cy,cx,cy-s); ctx.closePath();
   } else if(type==='moon'){
-    const dx = s*0.28, r2 = s*0.68;
-    ctx.arc(cx, cy, s, 0, Math.PI*2, true);
-    ctx.arc(cx+dx, cy, r2, 0, Math.PI*2, false);
-    ctx.closePath();
+    const r=s, cut=s*0.78, dx=s*0.34;
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.moveTo(cx+dx+cut,cy);
+    ctx.arc(cx+dx,cy,cut,0,Math.PI*2,true);
   } else if(type==='bolt'){
-    ctx.moveTo(cx-s*0.1, cy-s); ctx.lineTo(cx+s*0.45, cy-s*0.05); ctx.lineTo(cx, cy-s*0.05);
-    ctx.lineTo(cx+s*0.1, cy+s); ctx.lineTo(cx-s*0.45, cy+s*0.15); ctx.lineTo(cx, cy+s*0.15);
-    ctx.closePath();
+    ctx.moveTo(cx-s*0.08,cy-s); ctx.quadraticCurveTo(cx+s*0.18,cy-s*0.45,cx+s*0.52,cy-s*0.05);
+    ctx.lineTo(cx+s*0.04,cy-s*0.02); ctx.quadraticCurveTo(cx-s*0.02,cy+s*0.5,cx+s*0.03,cy+s);
+    ctx.quadraticCurveTo(cx-s*0.3,cy+s*0.45,cx-s*0.52,cy+s*0.12);
+    ctx.lineTo(cx-s*0.02,cy+s*0.05); ctx.closePath();
   } else if(type==='flower'){
+    const petal=s*0.52;
     for(let i=0;i<4;i++){
-      const a = i*Math.PI/2 + Math.PI/4;
-      ctx.moveTo(cx + Math.cos(a)*s*0.5 + s*0.5, cy + Math.sin(a)*s*0.5);
-      ctx.arc(cx+Math.cos(a)*s*0.5, cy+Math.sin(a)*s*0.5, s*0.5, 0, Math.PI*2);
+      const a=i*Math.PI/2+Math.PI/4;
+      const px=cx+Math.cos(a)*s*0.43, py=cy+Math.sin(a)*s*0.43;
+      ctx.moveTo(px+petal,py);
+      ctx.arc(px,py,petal,0,Math.PI*2);
     }
+    ctx.moveTo(cx+s*0.3,cy);
     ctx.arc(cx,cy,s*0.3,0,Math.PI*2);
-    ctx.closePath();
   } else {
-    ctx.arc(cx, cy, s*0.85, 0, Math.PI*2);
+    ctx.arc(cx,cy,s*0.85,0,Math.PI*2);
   }
 }
 
 /* ---------------------------------------------------------
-   GAME DEFINITIONS — 'click' | 'choice' | 'multiselect'
+   GAME DEFINITIONS: 'click' | 'choice' | 'multiselect'
    Six difficulty tiers now: beginner is easier than the old
    "easy", and everything above it nudged a touch harder.
 --------------------------------------------------------- */
@@ -472,8 +646,16 @@ const GAMES = [
     },
     handleClick(pt){ return Math.floor(pt.x / roundAnswer.barW) === roundAnswer.oddIndex; },
     drawHighlight(){
-      ctx.save(); ctx.strokeStyle = '#3ddc97'; ctx.lineWidth = 4;
-      ctx.strokeRect(roundAnswer.oddIndex*roundAnswer.barW+4, 26, roundAnswer.barW-8, H-82);
+      const cx = roundAnswer.oddIndex*roundAnswer.barW + roundAnswer.barW/2;
+      const cy = 30 + (H-90)/2;
+      const rx = roundAnswer.barW*0.68, ry = (H-90)/2*0.82;
+      ctx.save();
+      // A bold two-tone ring (white behind, magenta on top) so it reads
+      // clearly no matter what hue the bars happen to be this round.
+      ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(255,255,255,.9)';
+      ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
+      ctx.lineWidth = 4; ctx.strokeStyle = '#ff2ec8';
+      ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
       ctx.restore();
     },
     getCaption(){ return `Bar #${roundAnswer.oddIndex+1} was the different shade.`; }
@@ -483,7 +665,7 @@ const GAMES = [
     title:'The Hidden Shape', swatch:'#f2c300',
     blurb:'A shape hides in a solid field of color, randomly placed and sized. Name it.',
     prompt:'A shape is hidden in the color below. Which one is it?',
-    params:{beginner:48, easy:30, medium:15, hard:8, impossible:4, nosebleed:1.5},
+    params:{beginner:48, easy:30, medium:14, hard:5, impossible:1.6, nosebleed:0.5},
     shapes:['star','heart','tree','moon','cloud','diamond','bolt','flower'],
     bgs:['#f2c300','#2fb6a3','#7d5fff','#e0563d','#ff8fab','#4a4a4a'],
     render(diff){
@@ -498,12 +680,20 @@ const GAMES = [
       ctx.fill();
       roundAnswer = {cx, cy, size, shapeType};
     },
-    choices(){ return shuffle(this.shapes.map(s => ({label:s, correct: s===roundAnswer.shapeType}))); },
+    choices(){
+      const wrong = shuffle(this.shapes.filter(s=>s!==roundAnswer.shapeType)).slice(0,5);
+      return shuffle([roundAnswer.shapeType, ...wrong].map(s=>({label:s, correct:s===roundAnswer.shapeType})));
+    },
     drawHighlight(){
       ctx.save();
-      ctx.fillStyle = '#39ff8f';
+      // Dim the field first so the shape - now in a loud, unmistakable
+      // color with a bright outline - really pops off it.
+      ctx.fillStyle='rgba(5,7,13,.55)'; ctx.fillRect(0,0,W,H);
       pathFor(roundAnswer.shapeType, roundAnswer.cx, roundAnswer.cy, roundAnswer.size);
-      ctx.fill();
+      ctx.fillStyle = '#39ff8f'; ctx.fill();
+      ctx.lineWidth = 4; ctx.strokeStyle = '#ffffff';
+      pathFor(roundAnswer.shapeType, roundAnswer.cx, roundAnswer.cy, roundAnswer.size);
+      ctx.stroke();
       ctx.restore();
     },
     getCaption(){ return `It was a ${roundAnswer.shapeType}.`; }
@@ -513,7 +703,7 @@ const GAMES = [
     title:'The Buried Digit', swatch:'#35d6a0',
     blurb:'A number dissolved into a fresh gradient, random size, font, and spot. Pick it.',
     prompt:'A number is hidden below. Which one is it?',
-    params:{beginner:52, easy:34, medium:17, hard:9, impossible:4, nosebleed:1.5},
+    params:{beginner:52, easy:34, medium:16, hard:5.5, impossible:1.7, nosebleed:0.55},
     render(diff){
       const delta = this.params[diff];
       const hue = randInt(0,359);
@@ -540,11 +730,13 @@ const GAMES = [
     choices(){ return roundAnswer.options.map(o=>({label:String(o), correct:o===roundAnswer.num})); },
     drawHighlight(){
       ctx.save();
+      // Dim the gradient field first so the number pops unmistakably.
+      ctx.fillStyle='rgba(5,7,13,.6)'; ctx.fillRect(0,0,W,H);
       ctx.translate(roundAnswer.pos.x, roundAnswer.pos.y); ctx.rotate(roundAnswer.rotation);
       ctx.font = roundAnswer.fontStyleGetter(roundAnswer.pos.fontSize);
       ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.lineWidth=3; ctx.strokeStyle='#000'; ctx.strokeText(String(roundAnswer.num), 0, 0);
-      ctx.fillStyle='#fff'; ctx.fillText(String(roundAnswer.num), 0, 0);
+      ctx.lineWidth=4; ctx.strokeStyle='#000'; ctx.strokeText(String(roundAnswer.num), 0, 0);
+      ctx.fillStyle='#fff200'; ctx.fillText(String(roundAnswer.num), 0, 0);
       ctx.restore();
     },
     getCaption(){ return `The number was ${roundAnswer.num}.`; }
@@ -554,7 +746,7 @@ const GAMES = [
     title:'The Buried Words', swatch:'#7d5fff',
     blurb:'One to six words dissolved into a fresh-colored field. Find all of them.',
     prompt:'Somewhere between one and six words are hidden below. Select every word you can find.',
-    params:{beginner:42, easy:26, medium:13, hard:7, impossible:3.5, nosebleed:1.2},
+    params:{beginner:40, easy:22, medium:11, hard:4.5, impossible:1.4, nosebleed:0.45},
     words:['TREE','STAR','MOON','FISH','LEAF','CLOUD','STONE','RIVER','FLAME','GHOST','OCEAN','BERRY','SHARK','CANDY','FROST','MAPLE'],
     render(diff){
       const delta = this.params[diff];
@@ -572,18 +764,28 @@ const GAMES = [
         ctx.fillText(pw.word, 0, 0);
         ctx.restore();
       });
-      const options = shuffle(this.words).map(w=>({label:w, correct: chosenWords.includes(w)}));
+      // Exactly 6 options every round, regardless of how many words are
+      // actually hidden (1 to 6): the hidden ones plus just enough
+      // distractors from the unused word pool to fill out to 6. That keeps
+      // the button grid a consistent size instead of sometimes showing all
+      // sixteen words at once.
+      const distractorPool = shuffle(this.words.filter(w=>!chosenWords.includes(w)));
+      const distractorsNeeded = Math.max(0, 6-chosenWords.length);
+      const options = shuffle([...chosenWords, ...distractorPool.slice(0,distractorsNeeded)])
+        .map(w=>({label:w, correct: chosenWords.includes(w)}));
       roundAnswer = {placedWords: chosenWords, placedStyled, options};
     },
     choices(){ return roundAnswer.options; },
     drawHighlight(){
+      // Dim the field first so every hidden word pops unmistakably.
+      ctx.fillStyle='rgba(5,7,13,.6)'; ctx.fillRect(0,0,W,H);
       roundAnswer.placedStyled.forEach(pw=>{
         ctx.save();
         ctx.translate(pw.pos.x, pw.pos.y); ctx.rotate(pw.rotation);
         ctx.font = pw.fontStyleGetter(pw.pos.fontSize);
         ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.lineWidth=2; ctx.strokeStyle='#000'; ctx.strokeText(pw.word, 0, 0);
-        ctx.fillStyle='#fff'; ctx.fillText(pw.word, 0, 0);
+        ctx.lineWidth=3; ctx.strokeStyle='#000'; ctx.strokeText(pw.word, 0, 0);
+        ctx.fillStyle='#fff200'; ctx.fillText(pw.word, 0, 0);
         ctx.restore();
       });
     },
@@ -594,95 +796,204 @@ const GAMES = [
   },
   {
     id:'sameshade', type:'choice',
-    title:"Which One's Wider?", swatch:'#f2f2f2',
-    blurb:'Two blocks sit inside a randomized perspective illusion, on a fresh background and color every round.',
-    prompt:'Which block is truly wider — or are they the same width?',
+    title:"Which One's Wider?", swatch:'#fff200',
+    blurb:'Two yellow bars sit inside a fan of converging lines. The depth cue is the trap.',
+    prompt:'Which yellow bar is truly wider, or are they the same width?',
     params:{
-      beginner:{lines:[1,2], contrast:[0.65,0.85], diffPct:[32,45]},
-      easy:{lines:[2,4], contrast:[0.5,0.7], diffPct:[22,32]},
-      medium:{lines:[7,11], contrast:[0.36,0.5], diffPct:[14,20]},
-      hard:{lines:[13,19], contrast:[0.28,0.4], diffPct:[8,13]},
-      impossible:{lines:[21,30], contrast:[0.16,0.26], diffPct:[5,9]},
-      nosebleed:{lines:[32,44], contrast:[0.07,0.15], diffPct:[0,3]}
+      beginner:{diff:[0.16,0.26], vpGap:[70,100], rays:3,  tilt:0, heightVary:0.08, offsetChance:0.05, offsetMax:8},
+      easy:{diff:[0.10,0.17],     vpGap:[55,80],  rays:7,  tilt:0, heightVary:0.16, offsetChance:0.18, offsetMax:14},
+      medium:{diff:[0.05,0.09],   vpGap:[42,62],  rays:13, tilt:3, heightVary:0.26, offsetChance:0.35, offsetMax:20},
+      hard:{diff:[0.025,0.05],    vpGap:[30,46],  rays:19, tilt:5, heightVary:0.36, offsetChance:0.55, offsetMax:26},
+      impossible:{diff:[0.012,0.025], vpGap:[20,32], rays:27, tilt:7, heightVary:0.48, offsetChance:0.75, offsetMax:32},
+      nosebleed:{diff:[0.006,0.014],  vpGap:[14,22], rays:35, tilt:9, heightVary:0.62, offsetChance:0.9, offsetMax:38}
     },
-    blockColors:['#e8d34a','#e0563d','#5cc8ff','#3ddc97','#ffffff','#111111'],
     render(diff){
-      const p = this.params[diff];
-      const flip = Math.random()<0.5;
-      const lineCount = randInt(p.lines[0], p.lines[1]);
-      const contrast = rand(p.contrast[0], p.contrast[1]);
-      const thickness = rand(1,3.2);
-      const bg = hslToHex(randInt(0,359), randInt(15,35), randInt(8,16));
-      ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+      const p=this.params[diff];
+      const yellow='#fff200';
 
-      const vpX = W/2;
-      const vpY = flip ? rand(H-70,H-15) : rand(15,70);
-      const farY = flip ? rand(15,70) : rand(H-70,H-15);
-      const baseSpread = rand(70,170);
-
-      ctx.lineWidth = thickness;
-      for(let i=0;i<lineCount;i++){
-        const t = lineCount<=1 ? 1 : i/(lineCount-1);
-        const spread = baseSpread * (0.3 + t*1.0);
-        ctx.strokeStyle = `rgba(255,255,255,${contrast})`;
+      function roundedRectPath(x,y,w,h,r){
         ctx.beginPath();
-        ctx.moveTo(vpX, vpY); ctx.lineTo(vpX - spread, farY);
-        ctx.moveTo(vpX, vpY); ctx.lineTo(vpX + spread, farY);
-        ctx.stroke();
+        ctx.moveTo(x+r,y);
+        ctx.lineTo(x+w-r,y);
+        ctx.arcTo(x+w,y,x+w,y+r,r);
+        ctx.lineTo(x+w,y+h-r);
+        ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+        ctx.lineTo(x+r,y+h);
+        ctx.arcTo(x,y+h,x,y+h-r,r);
+        ctx.lineTo(x,y+r);
+        ctx.arcTo(x,y,x+r,y,r);
+        ctx.closePath();
       }
 
-      const nearY = flip ? rand(90,150) : rand(H-150,H-90);
-      const farBarY = flip ? rand(H-150,H-90) : rand(90,150);
-      const baseW = rand(120,190);
-      const sameRound = Math.random()<0.5;
-      let wNear = baseW, wFar = baseW, widerIsNear = null;
-      if(!sameRound){
-        const diffPct = rand(p.diffPct[0], p.diffPct[1])/100;
-        widerIsNear = Math.random()<0.5;
-        if(widerIsNear) wNear = baseW*(1+diffPct); else wFar = baseW*(1+diffPct);
-      }
-      const blockColor = pick(this.blockColors);
-      const nearBar = {x:vpX-wNear/2, y:nearY, w:wNear, h:22};
-      const farBar = {x:vpX-wFar/2, y:farBarY, w:wFar, h:22};
-      [nearBar, farBar].forEach(bar=>{
-        ctx.fillStyle = blockColor;
-        ctx.fillRect(bar.x, bar.y, bar.w, bar.h);
-        ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth=1;
-        ctx.strokeRect(bar.x+0.5, bar.y+0.5, bar.w-1, bar.h-1);
-      });
-
-      const topBar = flip ? farBar : nearBar;
-      const botBar = flip ? nearBar : farBar;
-      let correctLabel;
-      if(sameRound) correctLabel = 'same';
-      else{
-        const widerBar = widerIsNear ? nearBar : farBar;
-        correctLabel = (widerBar===topBar) ? 'top' : 'bottom';
-      }
-      roundAnswer = {topBar, botBar, correctLabel};
-    },
-    choices(){
-      return [
-        {label:'Top block is wider', correct: roundAnswer.correctLabel==='top'},
-        {label:'Bottom block is wider', correct: roundAnswer.correctLabel==='bottom'},
-        {label:'They are the same width', correct: roundAnswer.correctLabel==='same'}
+      // A colored backdrop with a couple of faint stacked cards peeking
+      // out, like a little stack of photos - the fan illusion lives on the
+      // top one. The palette and the card tilt both vary every round so the
+      // scene doesn't look identical round after round.
+      const palettes=[
+        ['#1d55a8','#0a2c60'],
+        ['#1e6b63','#0a3430'],
+        ['#5a2f9e','#2a1252'],
+        ['#a3401f','#4a1a0c']
       ];
-    },
-    drawHighlight(){
+      const pal=pick(palettes);
+      const bg=ctx.createLinearGradient(0,0,W,H);
+      bg.addColorStop(0,pal[0]); bg.addColorStop(1,pal[1]);
+      ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+      const cardRotA=rand(-0.065,-0.02), cardRotB=rand(0.02,0.05);
       ctx.save();
-      ctx.lineWidth=2; ctx.setLineDash([6,5]);
-      ctx.strokeStyle = '#5cc8ff';
-      ctx.beginPath(); ctx.moveTo(roundAnswer.topBar.x, 0); ctx.lineTo(roundAnswer.topBar.x, H); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(roundAnswer.topBar.x+roundAnswer.topBar.w, 0); ctx.lineTo(roundAnswer.topBar.x+roundAnswer.topBar.w, H); ctx.stroke();
-      ctx.strokeStyle = '#ff4d6d';
-      ctx.beginPath(); ctx.moveTo(roundAnswer.botBar.x, 0); ctx.lineTo(roundAnswer.botBar.x, H); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(roundAnswer.botBar.x+roundAnswer.botBar.w, 0); ctx.lineTo(roundAnswer.botBar.x+roundAnswer.botBar.w, H); ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.translate(W/2,H/2); ctx.rotate(cardRotA); ctx.translate(-W/2,-H/2);
+      roundedRectPath(26,20,W-52,H-40,20); ctx.fillStyle='#c3cbdb'; ctx.fill();
       ctx.restore();
+
+      ctx.save();
+      ctx.translate(W/2,H/2); ctx.rotate(cardRotB); ctx.translate(-W/2,-H/2);
+      roundedRectPath(20,26,W-40,H-52,20); ctx.fillStyle='#dbe0ea'; ctx.fill();
+      ctx.restore();
+
+      roundedRectPath(14,14,W-28,H-28,22);
+      ctx.fillStyle='#eef0f4'; ctx.fill();
+
+      ctx.save();
+      roundedRectPath(14,14,W-28,H-28,22);
+      ctx.clip();
+
+      // Higher tiers tilt the whole fan a few degrees, so the convergence
+      // can no longer be read off a perfectly vertical axis.
+      const tiltDeg = p.tilt ? rand(-p.tilt,p.tilt) : 0;
+      ctx.translate(W/2,H/2);
+      ctx.rotate(tiltDeg*Math.PI/180);
+      ctx.translate(-W/2,-H/2);
+
+      // Classical Ponzo setup, drawn as a fan of rays converging to an apex
+      // near the top of the card. The apex position, the base width, and
+      // how tall the fan is all vary substantially round to round so the
+      // scene reads differently each time rather than repeating one layout.
+      const vpX=W/2+rand(-30,30);
+      const vpY=rand(18,60);
+      const baseY=H-rand(26,60);
+      const spread=rand(0.62,1.0); // how wide the fan opens, as a fraction of max
+      const maxHalf=W/2-46;
+      const half=maxHalf*spread;
+      const leftBase=vpX-half+rand(-14,14), rightBase=vpX+half+rand(-14,14);
+
+      const rayCount=p.rays;
+      for(let i=0;i<rayCount;i++){
+        const t=rayCount===1?0.5:i/(rayCount-1);
+        const bx=leftBase+(rightBase-leftBase)*t;
+        const edge=(i===0||i===rayCount-1);
+        ctx.strokeStyle= edge? 'rgba(28,30,36,.88)' : 'rgba(55,58,68,.4)';
+        ctx.lineWidth = edge? 2.4 : 1;
+        ctx.beginPath();ctx.moveTo(vpX,vpY);ctx.lineTo(bx,baseY);ctx.stroke();
+      }
+
+      // Two targets: one close to the apex (narrow context - the illusion's
+      // strength is set by exactly HOW close, via vpGap, which itself
+      // scales with difficulty), one down near the wide base. They're
+      // always kept well apart - the farther apart two bars sit, the
+      // harder a true width match actually is to call, so the gap always
+      // stays large rather than ever drifting close together.
+      const vpGap=rand(p.vpGap[0],p.vpGap[1]);
+      const topY=vpY+vpGap;
+      const avail=baseY-18-topY;
+      const minGap=Math.max(120,avail*0.72), maxGap=Math.max(minGap+20,avail*0.97);
+      const bottomY=Math.min(baseY-18,topY+rand(minGap,maxGap));
+      const center=vpX+rand(-10,10);
+      let topCx=center,bottomCx=center;
+      if(Math.random()<.18){
+        const off=rand(8,26)*(Math.random()<.5?-1:1);
+        topCx+=off; bottomCx+=off;
+      }
+      // A horizontal misalignment between the two bars - so they no longer
+      // sit directly one above the other - makes a true comparison
+      // meaningfully harder. Its odds and size both climb with difficulty.
+      if(Math.random()<p.offsetChance){
+        topCx+=rand(-p.offsetMax,p.offsetMax); bottomCx+=rand(-p.offsetMax,p.offsetMax);
+      }
+
+      // True outcome is randomized every round: equal, top longer, bottom
+      // longer. When they differ, the gap is always big enough to be a fair
+      // (if hard, at high tiers) call - never so small it's pure luck.
+      const outcome=randInt(0,2);
+      const diffPct=rand(p.diff[0],p.diff[1]);
+      const baseW=rand(112,146);
+      let topW=baseW,bottomW=baseW;
+      if(outcome===1) topW=baseW*(1+diffPct);
+      if(outcome===2) bottomW=baseW*(1+diffPct);
+
+      // Thickness is independently randomized per bar, and deliberately
+      // allowed to differ from its partner - one bar can be noticeably
+      // taller or thinner than the other. That's a second, independent
+      // visual variable that has nothing to do with which one is wider, so
+      // it can reinforce OR fight the width illusion depending on the
+      // round, forcing a real judgment instead of a quick glance.
+      const hBase=rand(15,24);
+      const hVaryPct=p.heightVary>0?rand(0,p.heightVary):0;
+      const tallerIsTop=Math.random()<0.5;
+      let topH=hBase, bottomH=hBase;
+      if(hVaryPct>0){
+        if(tallerIsTop) topH=hBase*(1+hVaryPct); else bottomH=hBase*(1+hVaryPct);
+      }
+      const top={x:topCx-topW/2,y:topY,w:topW,h:topH,cx:topCx};
+      const bottom={x:bottomCx-bottomW/2,y:bottomY,w:bottomW,h:bottomH,cx:bottomCx};
+
+      [top,bottom].forEach(bar=>{
+        ctx.fillStyle=yellow; ctx.fillRect(bar.x,bar.y,bar.w,bar.h);
+        ctx.strokeStyle='rgba(120,108,0,.55)'; ctx.lineWidth=1; ctx.strokeRect(bar.x+.5,bar.y+.5,bar.w-1,bar.h-1);
+      });
+      ctx.restore();
+      roundAnswer={topBar:top,bottomBar:bottom,correctLabel:Math.abs(topW-bottomW)<0.01?'same':(topW>bottomW?'top':'bottom'),vpX,vpY,leftBase,rightBase,tiltDeg};
+    },
+    choices(){return [
+      {label:'Top yellow bar is wider',correct:roundAnswer.correctLabel==='top'},
+      {label:'Bottom yellow bar is wider',correct:roundAnswer.correctLabel==='bottom'},
+      {label:'They are the same width',correct:roundAnswer.correctLabel==='same'}
+    ];},
+    drawHighlight(){
+      const a=roundAnswer.topBar,b=roundAnswer.bottomBar;
+      const start=performance.now(),dur=760;
+      const targetX=W/2;
+      const targetTop=H*.42;
+      function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+      function frame(now){
+        const t=Math.min(1,(now-start)/dur),e=ease(t);
+        ctx.fillStyle='#090c14';ctx.fillRect(0,0,W,H);
+
+        // A simplified measurement view after the illusion collapses -
+        // the tilt and perspective drop away, leaving two straight bars.
+        const ax=a.x+(targetX-a.w/2-a.x)*e;
+        const bx=b.x+(targetX-b.w/2-b.x)*e;
+        const ay=a.y+(targetTop-a.y)*e;
+        const by=b.y+(targetTop+a.h+28-b.y)*e;
+        ctx.fillStyle='#fff200';
+        ctx.fillRect(ax,ay,a.w,a.h);
+        ctx.fillRect(bx,by,b.w,b.h);
+        if(t<1){requestAnimationFrame(frame);return;}
+
+        const topEdgeY=targetTop-20;
+        const bottomEdgeY=targetTop+Math.max(a.h,b.h)+55;
+        ctx.save();
+        ctx.strokeStyle='rgba(255,255,255,.72)';
+        ctx.lineWidth=2;
+        [a.w,b.w].forEach(w=>{
+          const lx=targetX-w/2,rx=targetX+w/2;
+          ctx.beginPath();ctx.moveTo(lx,topEdgeY);ctx.lineTo(lx,bottomEdgeY);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(rx,topEdgeY);ctx.lineTo(rx,bottomEdgeY);ctx.stroke();
+        });
+        ctx.strokeStyle='#3ddc97';ctx.lineWidth=3;
+        const larger=Math.max(a.w,b.w),smaller=Math.min(a.w,b.w);
+        ctx.beginPath();ctx.moveTo(targetX-larger/2,bottomEdgeY+16);ctx.lineTo(targetX+larger/2,bottomEdgeY+16);ctx.stroke();
+        if(Math.abs(larger-smaller)>0.5){
+          ctx.strokeStyle='#ff4d6d';ctx.lineWidth=2;
+          ctx.beginPath();ctx.moveTo(targetX-smaller/2,bottomEdgeY+16);ctx.lineTo(targetX+smaller/2,bottomEdgeY+16);ctx.stroke();
+        }
+        ctx.restore();
+      }
+      requestAnimationFrame(frame);
     },
     getCaption(){
-      if(roundAnswer.correctLabel==='same') return 'They were exactly the same width — the blue and pink lines line up.';
-      return `The ${roundAnswer.correctLabel} block was truly wider — its lines sit outside the other's.`;
+      if(roundAnswer.correctLabel==='same') return 'The two yellow bars were the same width. The perspective was the trick.';
+      return `The ${roundAnswer.correctLabel} yellow bar was actually wider.`;
     }
   },
   {
@@ -723,53 +1034,138 @@ const GAMES = [
   },
   {
     id:'lineshift', type:'click',
-    title:'The Line-Shifted Hue', swatch:'#5cc8ff',
-    blurb:'Colored scanlines wash over a scattered, freely-placed field of balls in a fresh random color every round.',
-    prompt:'One ball has a genuinely different true color from the rest. Click it.',
-    params:{beginner:75, easy:48, medium:26, hard:14, impossible:6, nosebleed:2.5},
+    title:'Spheres in the Stripes', swatch:'#5cc8ff',
+    blurb:'Glossy 3D balls sit inside a bold red/green/blue stripe field. One ball is a genuinely different color underneath the shine.',
+    prompt:'One ball is a different true color. Find it.',
+    params:{
+      beginner:{count:7,  radius:[34,42], stripeH:11, mix:0.32, shift:70},
+      easy:{count:8,      radius:[32,40], stripeH:9,  mix:0.44, shift:58},
+      medium:{count:9,    radius:[30,38], stripeH:7.5,mix:0.55, shift:46},
+      hard:{count:10,     radius:[28,35], stripeH:6.5,mix:0.65, shift:36},
+      impossible:{count:11, radius:[26,33], stripeH:5.5, mix:0.75, shift:28},
+      nosebleed:{count:12,  radius:[24,31], stripeH:4.5, mix:0.84, shift:20}
+    },
     render(diff){
-      const delta = this.params[diff];
-      ctx.fillStyle = '#0b0b0b'; ctx.fillRect(0,0,W,H);
-      const hue = randInt(0,359);
-      const count = randInt(12,16);
-      const balls = [];
-      let guard=0;
-      while(balls.length<count && guard<400){
-        guard++;
-        const r = rand(22,38);
-        const cx = rand(r+20, W-r-20), cy = rand(r+20, H-r-20);
-        const collide = balls.some(b=>Math.hypot(b.cx-cx,b.cy-cy) < (b.r+r+12));
-        if(!collide) balls.push({cx,cy,r});
+      const p=this.params[diff];
+      // Three bold colors tile the ENTIRE canvas edge to edge, cycling in
+      // order - a bright red/green/blue field like a beach-ball backdrop.
+      const palettes=[
+        ['#ee2d46','#2dcc66','#3884ff'],
+        ['#ff5039','#28d98c','#4d6dff'],
+        ['#ff3d6b','#3fcf5c','#2f9dff']
+      ];
+      const colorsHex=pick(palettes);
+      const colorsRgb=colorsHex.map(hexToRgb);
+      const stripeH=p.stripeH;
+      const bandCount=Math.ceil(H/stripeH)+2;
+      for(let i=0;i<bandCount;i++){
+        ctx.fillStyle=colorsHex[((i%3)+3)%3];
+        ctx.fillRect(0,i*stripeH,W,stripeH+0.5);
       }
-      const oddIdx = randInt(0, balls.length-1);
+
+      const count=p.count, balls=[];
+      let guard=0;
+      while(balls.length<count && guard<3000){
+        guard++;
+        const r=rand(p.radius[0],p.radius[1]), cx=rand(r+34,W-r-34), cy=rand(r+30,H-r-34);
+        if(!balls.some(b=>Math.hypot(b.cx-cx,b.cy-cy)<b.r+r+16)) balls.push({cx,cy,r});
+      }
+
+      // Normal balls share one true hue; the odd ball is a genuinely
+      // different hue. Lower saturation/lightness than the vivid
+      // background keeps the true hues from popping too hard on their own
+      // before the stripe wash is even applied.
+      const normalH=randInt(0,359), normal=hslToHex(normalH,50,48);
+      const oddH=(normalH+p.shift)%360;
+      const odd=hslToHex(oddH,50,48);
+      const oddIdx=randInt(0,balls.length-1);
+      const normalRgb=hexToRgb(normal), oddRgb=hexToRgb(odd);
+
+      // Every ball is rendered pixel-by-pixel into real, fully opaque RGBA
+      // data: a glossy-sphere shade blended with whichever stripe color
+      // passes through that row, baked directly into the pixel. Nothing
+      // here is a separate translucent layer floating over another - each
+      // pixel IS the one final, opaque color, so there's no ambiguity
+      // about lines being "in front of" or "behind" the ball.
+      const imgData=ctx.getImageData(0,0,W,H);
+      const data=imgData.data;
       balls.forEach((b,i)=>{
-        const isOdd = i===oddIdx;
-        const hueVal = isOdd ? (hue + delta*(Math.random()<0.5?1:-1) + 360)%360 : hue;
-        b.color = `hsl(${hueVal},65%,55%)`;
+        b.isOdd=i===oddIdx;
+        b.base=b.isOdd?odd:normal;
+        const baseRgb=b.isOdd?oddRgb:normalRgb;
+        const x0=Math.max(0,Math.floor(b.cx-b.r)), x1=Math.min(W,Math.ceil(b.cx+b.r));
+        const y0=Math.max(0,Math.floor(b.cy-b.r)), y1=Math.min(H,Math.ceil(b.cy+b.r));
+        for(let y=y0;y<y1;y++){
+          const k=(((Math.floor(y/stripeH))%3)+3)%3;
+          const stripe=colorsRgb[k];
+          for(let x=x0;x<x1;x++){
+            const dx=x-b.cx, dy=y-b.cy;
+            if(dx*dx+dy*dy<=b.r*b.r){
+              const nx=dx/b.r, ny=dy/b.r;
+              const hlx=nx+0.35, hly=ny+0.35;
+              const hlDist=Math.sqrt(hlx*hlx+hly*hly);
+              const hl=Math.max(0,1-hlDist/1.1);
+              const edge=Math.sqrt(nx*nx+ny*ny);
+              const shadeF=1-0.35*Math.max(0,edge-0.55)/0.45;
+              let sr=baseRgb.r+(255-baseRgb.r)*hl*0.5;
+              let sg=baseRgb.g+(255-baseRgb.g)*hl*0.5;
+              let sb=baseRgb.b+(255-baseRgb.b)*hl*0.5;
+              sr*=shadeF; sg*=shadeF; sb*=shadeF;
+              const mixv=p.mix;
+              const fr=stripe.r*mixv+sr*(1-mixv);
+              const fg=stripe.g*mixv+sg*(1-mixv);
+              const fb=stripe.b*mixv+sb*(1-mixv);
+              const idx=(y*W+x)*4;
+              data[idx]=fr; data[idx+1]=fg; data[idx+2]=fb; data[idx+3]=255;
+            }
+          }
+        }
       });
-      balls.forEach(b=>{ ctx.beginPath(); ctx.arc(b.cx,b.cy,b.r,0,Math.PI*2); ctx.fillStyle=b.color; ctx.fill(); });
-      const lineColors = ['rgba(255,0,60,0.35)','rgba(0,255,110,0.3)','rgba(0,140,255,0.32)'];
-      let li=0;
-      for(let y=0;y<H;y+=5){ ctx.fillStyle = lineColors[li % lineColors.length]; ctx.fillRect(0,y,W,2); li++; }
-      roundAnswer = {balls, oddIdx};
+      ctx.putImageData(imgData,0,0);
+
+      // A thin dark outline so each sphere still reads crisply as an object.
+      balls.forEach(b=>{
+        ctx.save(); ctx.globalAlpha=0.4; ctx.strokeStyle='#000'; ctx.lineWidth=1.2;
+        ctx.beginPath();ctx.arc(b.cx,b.cy,b.r,0,Math.PI*2);ctx.stroke(); ctx.restore();
+      });
+
+      roundAnswer={balls,oddIdx,colors:colorsHex,normal,odd,stripeH};
     },
     handleClick(pt){
       for(let i=0;i<roundAnswer.balls.length;i++){
-        const b = roundAnswer.balls[i];
-        if(Math.hypot(pt.x-b.cx, pt.y-b.cy) < b.r) return i === roundAnswer.oddIdx;
+        const b=roundAnswer.balls[i];
+        if(Math.hypot(pt.x-b.cx,pt.y-b.cy)<b.r) return i===roundAnswer.oddIdx;
       }
       return false;
     },
     drawHighlight(){
-      ctx.fillStyle = '#0b0b0b'; ctx.fillRect(0,0,W,H);
-      roundAnswer.balls.forEach((b,i)=>{
-        ctx.beginPath(); ctx.arc(b.cx,b.cy,b.r*1.25,0,Math.PI*2);
-        ctx.fillStyle = b.color; ctx.fill();
-        if(i===roundAnswer.oddIdx){ ctx.lineWidth=4; ctx.strokeStyle='#3ddc97'; ctx.stroke(); }
+      ctx.fillStyle='#12141c'; ctx.fillRect(0,0,W,H);
+      roundAnswer.balls.forEach(b=>{
+        const grad=ctx.createRadialGradient(
+          b.cx-b.r*0.35, b.cy-b.r*0.35, b.r*0.06,
+          b.cx, b.cy, b.r*1.05
+        );
+        grad.addColorStop(0, shade(b.base,55));
+        grad.addColorStop(0.55, b.base);
+        grad.addColorStop(1, shade(b.base,-45));
+        ctx.beginPath();ctx.arc(b.cx,b.cy,b.r,0,Math.PI*2);
+        ctx.fillStyle=grad; ctx.fill();
       });
+      // The lines are gone entirely now, and the correct ball is circled in
+      // a bold white+magenta ring that reads clearly against any hue.
+      const odd = roundAnswer.balls.find(b=>b.isOdd);
+      if(odd){
+        ctx.save();
+        ctx.lineWidth=7; ctx.strokeStyle='rgba(255,255,255,.95)';
+        ctx.beginPath();ctx.arc(odd.cx,odd.cy,odd.r+7,0,Math.PI*2);ctx.stroke();
+        ctx.lineWidth=4; ctx.strokeStyle='#ff2ec8';
+        ctx.beginPath();ctx.arc(odd.cx,odd.cy,odd.r+7,0,Math.PI*2);ctx.stroke();
+        ctx.restore();
+      }
     },
-    getCaption(){ return 'That ball was a genuinely different color — true colors shown above.'; }
+    getCaption(){return 'One sphere had a genuinely different true color underneath. The same red/green/blue grid glossed over every ball, pulling the apparent colors toward each other.';}
   }
+
 ];
 const GAME_IDS = GAMES.map(g=>g.id);
 function gameById(id){ return GAMES.find(g=>g.id===id); }
@@ -777,111 +1173,128 @@ function gameById(id){ return GAMES.find(g=>g.id===id); }
 /* ---------------------------------------------------------
    NARRATOR
 --------------------------------------------------------- */
-const FLAVOR = {
-  oddbar: ["One of these is a filthy liar.", "Ten bars. One traitor.", "I'd point it out, but I'm a voice with no eyes.", "Somewhere in here: betrayal.", "Ten shades walk into a bar. One doesn't belong."],
-  hiddenshape: ["Something is hiding in plain sight.", "Don't blink. I would, if I had eyelids.", "A shape, a color, a secret.", "Squint if you must.", "It's right there. Probably."],
-  buriednumber: ["The numbers do not want to be found.", "Do the math. Or guess.", "Somewhere in there, digits.", "Count on nothing, including me."],
-  buriedword: ["Words are terrible at hiding.", "Find them all. I'll wait, robotically.", "A word search designed by someone who dislikes you.", "Some words are there. Some are traps."],
-  sameshade: ["Trust your eyes. Or don't, I'm not your therapist.", "Perspective is a liar, and so am I, sometimes.", "Same size. Wildly different story.", "Width is a construct."],
-  ghostbars: ["Something is behind the stripes.", "Stripes hide more than zebras.", "Barely there. On purpose.", "A ghost, somewhere in the lines."],
-  lineshift: ["The lights are lying to you.", "Color is a suggestion at this point.", "New colors, same old trick.", "Somewhere, a genuine imposter."]
+const NARRATOR_OPENERS=[
+"Your eyes are on trial.","The pixels have arranged a small ambush.","Time to distrust your first glance.",
+"This looks innocent. It is not.","A tiny visual scandal is underway.","The board is ready to lie politely.",
+"Your eyeballs have been summoned.","The next few seconds are between you and the evidence.",
+"Someone made this harder than necessary.","The visual evidence is now admissible.",
+"Your instincts have entered the courtroom.","Please inspect the suspicious rectangle situation.",
+"The board has selected chaos with excellent manners.","This is a bad day to be overconfident.",
+"Your first impression has a very short lease.","The pixels would like a word.",
+"Prepare your best suspicious squint.","This next decision has consequences for your ego.",
+"A visual trap has been lovingly prepared.","The screen has a secret and terrible bedside manner.",
+"Your eyes may file a complaint later.","The next picture is technically innocent.",
+"Observe carefully. Regret efficiently.","The evidence is on screen and pretending nothing happened.",
+"Your vision has been handed a mildly unfair assignment.","The board promises nothing and means it.",
+"Look once. Look twice. Then trust neither.","Your confidence is about to meet geometry.",
+"A little optical mischief is loading.","The screen has entered witness mode.",
+"The pixels are behaving suspiciously again.","A fresh trap has arrived at the lab.",
+"Your eyes have excellent instincts. Usually.","This is where tiny differences become enormous problems.",
+"A perfectly ordinary image would be boring.","Somewhere on this board is your next bad guess.",
+"The visual gods request one careful look.","Your task is simple. Your perception may disagree.",
+"Time to negotiate with your perception.","The board is smiling behind your back.",
+"A new optical nuisance has entered the room.","The screen is about to become argumentative.",
+"Your vision has been challenged to a duel.","One tiny detail is carrying the whole round.",
+"Let us make several pixels unnecessarily important.","The board has secrets and poor disclosure practices.",
+"Your eyes are about to do unpaid overtime."
+];
+const NARRATOR_MIDDLES=[
+"Trust the odd detail before the obvious one.","The smallest clue is still a clue.",
+"Do not let the whole picture bully your attention.","Look for the detail that refuses to behave.",
+"Big confidence is not the same as good eyesight.","The answer is hiding in plain sight and enjoying itself.",
+"Perspective has a criminal record.","Your job is to notice what the brain edits out.",
+"There is no prize for clicking with enthusiasm.","A calm stare beats a heroic guess.",
+"You are allowed to squint, metaphorically or otherwise.","The obvious answer has hired a very persuasive lawyer.",
+"The picture is simple. Your perception is doing improv.","Somewhere in this mess is one honest clue.",
+"Watch the boundaries, not the drama.","Your eyes already noticed something. Listen to them.",
+"The board rewards suspicion, not speed alone.","One detail is wearing a fake moustache.",
+"The visual trick is counting on your brain filling gaps.","Do not negotiate with the illusion.",
+"The pixels are not confused. You are being tested.","A careful glance can ruin a perfectly good illusion.",
+"The board is hoping you rely on autopilot.","This is a terrible moment to trust vibes.",
+"Look for relationships, not just objects.","Compare before you commit.",
+"The difference may be smaller than your confidence.","Your eyes notice patterns faster than your pride admits.",
+"The answer is not hiding from the clock.","You are hunting a detail, not solving the universe."
+];
+const NARRATOR_ENDINGS=[
+"Make the call.","Choose before the clock gets dramatic.","Your move.","Now point at the evidence.",
+"Take your shot.","Do not overthink the wallpaper.","Pick a side.","Commit with suspicious confidence.",
+"Give your eyeballs a vote.","Let us see what your vision thinks.","The board awaits your verdict.",
+"Time to put that first glance on record."
+];
+const DIFF_NARRATION={
+beginner:["You have room to breathe.","The board is being unusually polite.","Consider this the warm welcome."],
+easy:["A little pressure, nothing theatrical.","This one still believes in mercy.","The warmup has opinions now."],
+medium:["Now the pixels expect a real answer.","The room has stopped being generous.","This is where guessing gets expensive."],
+hard:["Your eyes have officially been warned.","The board is done being friendly.","Precision matters now."],
+impossible:["The difference is having a very quiet day.","This one has hidden its evidence well.","Even the pixels are sweating."],
+nosebleed:["The clue is practically microscopic.","Your eyes have entered overtime.","This board has questionable intentions."]
 };
-const FLAVOR_INTRO = {
-  oddbar: "Ten bars, a new color every round. One is a different shade. Find the odd one out.",
-  hiddenshape: "A shape hides inside a solid field of color, somewhere new every time. Spot it and name it.",
-  buriednumber: "A number is dissolved into a fresh gradient. Read it before it disappears.",
-  buriedword: "Between one and six words are hidden. Find every single one.",
-  sameshade: "Two blocks sit inside a perspective illusion. Figure out which one is actually wider, if either.",
-  ghostbars: "A faint shape of random size hides behind a screen of black stripes. Look through them.",
-  lineshift: "Colored scanlines wash over a scattered field of balls. One ball is a genuinely different color underneath."
-};
-const DIFF_ANNOUNCE = {
-  beginner: ["This is basically a tutorial.", "Relax. Practically a freebie.", "Beginner mode. Even you can't miss this."],
-  easy: ["Baby's first round.", "Warm-up.", "Easy mode."],
-  medium: ["Getting spicy.", "This is where casuals start sweating.", "Medium difficulty."],
-  hard: ["Now we're talking.", "This one bites back a little.", "Hard mode."],
-  impossible: ["Impossible, as advertised.", "You're probably not going to see this.", "Good luck with this."],
-  nosebleed: ["Nosebleed. Godspeed.", "This is basically a cry for help.", "I can't see it either."]
-};
-function estimateSpeechMs(text){ return text.trim().split(/\s+/).length * 300 + 250; }
+function buildNarratorBank(){
+  const bank=[];
+  let n=0;
+  for(let a=0;a<NARRATOR_OPENERS.length;a++){
+    for(let b=0;b<NARRATOR_MIDDLES.length;b++){
+      const c=NARRATOR_ENDINGS[(a*7+b*3)%NARRATOR_ENDINGS.length];
+      bank.push(`${NARRATOR_OPENERS[a]} ${NARRATOR_MIDDLES[b]} ${c}`);
+      if(++n>=720) return shuffle(bank);
+    }
+  }
+  return shuffle(bank);
+}
+let narratorQueue=buildNarratorBank();
+function cleanSpokenText(text){return String(text).replace(/[—–-]+/g,' ').replace(/\s{2,}/g,' ').trim();}
+function nextNarratorLine(diff){
+  if(narratorQueue.length===0) narratorQueue=buildNarratorBank();
+  let line=narratorQueue.shift();
+  if(Math.random()<.52&&DIFF_NARRATION[diff]) line+=` ${pick(DIFF_NARRATION[diff])}`;
+  return cleanSpokenText(line);
+}
+function estimateSpeechMs(text){return text.trim().split(/\s+/).length*260+250;}
 function speak(text){
-  if(!settings.narratorOn) return;
-  if(!('speechSynthesis' in window)) return;
+  if(!settings.narratorOn||!('speechSynthesis' in window)) return;
   try{
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.03; u.pitch = 1.0;
-    window.speechSynthesis.speak(u);
+    const u=new SpeechSynthesisUtterance(cleanSpokenText(text));
+    u.rate=1.04;u.pitch=1.0;window.speechSynthesis.speak(u);
   }catch(e){}
 }
-function speakForRound(gameObj, diffLine, flavorLine){
+function speakForRound(gameObj,diffLine,flavorLine){
   if(!settings.narratorOn) return;
-  const pace = PACE_CONFIG[settings.pace];
-  const budgetMs = pace.transition + Math.min(settings.timerSeconds*1000, 6000)*0.5;
-  if(settings.timerSeconds <= 2 && pace.transition < 900) return;
-  const full = `${diffLine} ${gameObj.title}. ${flavorLine}`;
-  const short = `${diffLine} ${gameObj.title}.`;
-  if(estimateSpeechMs(full) <= budgetMs) speak(full);
-  else if(estimateSpeechMs(short) <= budgetMs) speak(short);
-  else if(estimateSpeechMs(diffLine) <= budgetMs) speak(diffLine);
+  const pace=PACE_CONFIG[settings.pace];
+  const budgetMs=pace.transition+Math.min((settings.timerSeconds==='inf'?6:settings.timerSeconds)*1000,6000)*.5;
+  const line=nextNarratorLine(currentDiff||'easy');
+  const extra=cleanSpokenText(flavorLine||diffLine||'');
+  const full=`${line} ${extra}`;
+  if(estimateSpeechMs(full)<=budgetMs) speak(full); else speak(line);
 }
-
 /* ---------------------------------------------------------
-   MUSIC — probes for optional track1.mp3..track6.mp3
+   MUSIC
 --------------------------------------------------------- */
-const TRACK_COUNT = 6;
-let availableTracks = [];
-let activeAudio = null;
-function probeTracks(){
-  const promises = [];
-  for(let i=1;i<=TRACK_COUNT;i++){
-    promises.push(new Promise(resolve=>{
-      const a = new Audio();
-      let done=false;
-      const finish = (ok)=>{ if(done) return; done=true; resolve(ok?{index:i, el:a}:null); };
-      a.addEventListener('canplaythrough', ()=>finish(true), {once:true});
-      a.addEventListener('error', ()=>finish(false), {once:true});
-      setTimeout(()=>finish(false), 3500);
-      a.src = `track${i}.mp3`;
-      a.preload = 'auto';
-    }));
-  }
-  return Promise.all(promises).then(r=>r.filter(Boolean));
-}
-function fadeAudio(audioEl, from, to, durationMs, onDone){
-  const steps=20; let i=0;
-  const iv = setInterval(()=>{
-    i++;
-    audioEl.volume = from + (to-from)*(i/steps);
-    if(i>=steps){ clearInterval(iv); audioEl.volume=to; if(onDone) onDone(); }
-  }, durationMs/steps);
-}
-function playTrack(index){
-  const found = availableTracks.find(t=>t.index===index);
-  if(!found) return;
-  const newAudio = found.el;
-  newAudio.loop = true; newAudio.volume = 0; newAudio.currentTime = 0;
-  newAudio.play().catch(()=>{});
-  fadeAudio(newAudio, 0, 0.32, 1200);
-  if(activeAudio && activeAudio!==newAudio){
-    const old = activeAudio;
-    fadeAudio(old, old.volume, 0, 1200, ()=>old.pause());
-  }
-  activeAudio = newAudio;
-  settings.musicTrack = index;
-  persistSettings();
+const bgMusic=document.getElementById('bgMusic');
+bgMusic.loop=true;
+bgMusic.preload='auto';
+bgMusic.volume=.28;
+async function ensureMusicPlaying(){
+  if(!settings.musicOn) return;
+  try{
+    if(bgMusic.paused){
+      bgMusic.currentTime=0;
+      await bgMusic.play();
+    }
+  }catch(e){}
 }
 function stopMusic(){
-  if(activeAudio){ const old=activeAudio; fadeAudio(old, old.volume, 0, 800, ()=>old.pause()); activeAudio=null; }
-  settings.musicTrack = null;
-  persistSettings();
+  bgMusic.pause();
+  bgMusic.currentTime=0;
 }
-probeTracks().then(found=>{ availableTracks = found; renderSettingsScreen(); });
+document.addEventListener('pointerdown',()=>{
+  if(settings.musicOn) ensureMusicPlaying();
+},{passive:true});
 
 /* ---------------------------------------------------------
    GLOBAL STATE + PERSISTED SETTINGS
 --------------------------------------------------------- */
-const settings = { timerSeconds:7, sessionType:'rounds', sessionRounds:10, sessionMinutes:10, soloMode:true, narratorOn:true, pace:'average', musicTrack:null };
+const settings = { timerSeconds:7, sessionType:'rounds', sessionRounds:10, sessionMinutes:10, soloMode:false, narratorOn:true, pace:'average', musicOn:true };
 let session = null;
 let sessionScore = {correct:0, total:0};
 let eyetest = { station:null, difficulty:'easy' };
@@ -889,6 +1302,7 @@ let playMode = null;
 let activeTimerInterval = null;
 let paused = false;
 let pausedWhileRunning = false;
+let settingsOpenedFromPause = false;
 let timerRunning = false;
 let currentRemaining = null, currentTotal = null, currentTimerTick = null, currentTimerExpire = null;
 let currentMultiselectSubmit = null;
@@ -920,16 +1334,25 @@ function clearPendingStep(){
   pendingCallback = null;
 }
 
-async function persistSettings(){
-  try{ if(window.storage) await window.storage.set('optic_bench_settings', JSON.stringify(settings), false); }catch(e){}
+const SETTINGS_KEY='optic_bench_settings_v3';
+function persistSettings(){
+  try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));}catch(e){}
 }
-async function loadPersistedSettings(){
+function loadPersistedSettings(){
   try{
-    if(window.storage){
-      const res = await window.storage.get('optic_bench_settings', false);
-      if(res && res.value){ Object.assign(settings, JSON.parse(res.value)); }
-    }
+    const raw=localStorage.getItem(SETTINGS_KEY);
+    if(raw) Object.assign(settings,JSON.parse(raw));
   }catch(e){}
+  settings.timerSeconds=(settings.timerSeconds==='inf')?'inf':(Number(settings.timerSeconds)||7);
+  settings.sessionRounds=Number(settings.sessionRounds)||10;
+  settings.sessionMinutes=Number(settings.sessionMinutes)||10;
+  settings.sessionType=['rounds','time','infinity'].includes(settings.sessionType)?settings.sessionType:'rounds';
+  settings.pace=['fast','average','slow'].includes(settings.pace)?settings.pace:'average';
+  // Solo mode is kept in the codebase but no longer exposed in Settings -
+  // every round now plays out in "friends / watch" mode.
+  settings.soloMode=false;
+  settings.narratorOn=settings.narratorOn!==false;
+  settings.musicOn=settings.musicOn!==false;
 }
 loadPersistedSettings();
 
@@ -939,12 +1362,14 @@ loadPersistedSettings();
 --------------------------------------------------------- */
 let screenHistory = [];
 function showScreen(name, opts){
-  opts = opts || {};
-  const curEl = document.querySelector('.screen.active');
-  const curName = curEl ? curEl.id.replace('screen-','') : null;
-  if(!opts.noHistory && curName && curName!==name) screenHistory.push(curName);
+  opts=opts||{};
+  const curEl=document.querySelector('.screen.active');
+  const curName=curEl?curEl.id.replace('screen-',''):null;
+  if(!opts.noHistory&&curName&&curName!==name) screenHistory.push(curName);
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
+  if(name==='play') document.body.classList.add('playing');
+  else document.body.classList.remove('playing');
 }
 function goBack(){
   const prev = screenHistory.pop();
@@ -961,7 +1386,7 @@ function buildStationCard(g, onClick){
   preview.className='card-preview'; preview.width=640; preview.height=420;
   card.appendChild(preview);
   const info = document.createElement('div');
-  info.innerHTML = `<span class="num">STATION</span><h3>${g.title}</h3><p>${g.blurb}</p>`;
+  info.innerHTML = `<span class="num">TRIAL</span><h3>${g.title}</h3><p>${g.blurb}</p>`;
   card.appendChild(info);
   card.addEventListener('click', onClick);
   try{ bindCanvas(preview); g.render('easy'); bindCanvas(canvas); }catch(e){ bindCanvas(canvas); }
@@ -983,8 +1408,8 @@ document.querySelectorAll('.modecard').forEach(el=>{
   });
 });
 
-document.getElementById('settingsBtn').addEventListener('click', ()=>{ renderSettingsScreen(); showScreen('settings'); });
-document.getElementById('settingsDone').addEventListener('click', ()=>goBack());
+document.getElementById('settingsBtn').addEventListener('click', ()=>{ ensureMusicPlaying(); renderSettingsScreen(); showScreen('settings'); });
+document.getElementById('settingsDone').addEventListener('click',()=>{ const fromPause=settingsOpenedFromPause; settingsOpenedFromPause=false; goBack(); if(fromPause){ document.getElementById('pauseOverlay').style.display='flex'; document.getElementById('pauseBtn').textContent='►'; paused=true; } });
 
 document.getElementById('hiddenBack').addEventListener('click', ()=>{
   const cur = document.querySelector('.screen.active').id.replace('screen-','');
@@ -996,6 +1421,7 @@ document.getElementById('hiddenBack').addEventListener('click', ()=>{
     paused=false; timerRunning=false;
     if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
     if('speechSynthesis' in window) window.speechSynthesis.cancel();
+    document.body.classList.remove('playing');
   }
   goBack();
 });
@@ -1003,7 +1429,7 @@ document.getElementById('hiddenBack').addEventListener('click', ()=>{
 /* ---------------------------------------------------------
    SETTINGS SCREEN
 --------------------------------------------------------- */
-const TIMER_OPTIONS = [1,3,5,7,10,15,20,30];
+const TIMER_OPTIONS = [1,3,5,7,10,15,20,30,'inf'];
 const ROUND_OPTIONS = [1,3,5,7,10,15,20,30,40,50,75,100,200];
 const MINUTE_OPTIONS = [0.5,1,3,5,10,15,20,30,45,60,90,120];
 
@@ -1024,7 +1450,7 @@ function renderPills(containerId, options, currentVal, onPick, formatFn){
   });
 }
 function renderSettingsScreen(){
-  renderPills('timerOptions', TIMER_OPTIONS, settings.timerSeconds, v=>settings.timerSeconds=v, v=>v+'s');
+  renderPills('timerOptions', TIMER_OPTIONS, settings.timerSeconds, v=>settings.timerSeconds=v, v=>v==='inf'?'∞':v+'s');
   renderPills('sessionTypeOptions', ['rounds','time','infinity'], settings.sessionType, v=>settings.sessionType=v,
     v=> v==='rounds'?'BY ROUNDS': v==='time' ? 'BY TIME' : 'INFINITE');
   const valueRow = document.getElementById('sessionValueOptions');
@@ -1036,29 +1462,15 @@ function renderSettingsScreen(){
     else renderPills('sessionValueOptions', MINUTE_OPTIONS, settings.sessionMinutes, v=>settings.sessionMinutes=v, formatMinutes);
   }
   renderPills('paceOptions', ['fast','average','slow'], settings.pace, v=>settings.pace=v, v=>v.toUpperCase());
-  renderPills('partyOptions', [true,false], settings.soloMode, v=>settings.soloMode=v, v=> v ? 'SOLO — TAP ANSWERS' : 'FRIENDS — JUST WATCH');
+  renderPills('partyOptions', [true,false], settings.soloMode, v=>settings.soloMode=v, v=> v ? 'SOLO • TAP ANSWERS' : 'FRIENDS • JUST WATCH');
   renderPills('narratorOptions', [true,false], settings.narratorOn, v=>settings.narratorOn=v, v=> v ? 'NARRATOR ON' : 'NARRATOR OFF');
 
-  const musicBlock = document.getElementById('musicBlock');
-  if(availableTracks.length===0){
-    musicBlock.style.display='none';
-  } else {
-    musicBlock.style.display='block';
-    const c = document.getElementById('musicOptions');
-    c.innerHTML='';
-    const offBtn = document.createElement('button');
-    offBtn.className='pill'+(settings.musicTrack===null?' active':'');
-    offBtn.textContent='OFF';
-    offBtn.addEventListener('click', ()=>{ stopMusic(); renderSettingsScreen(); });
-    c.appendChild(offBtn);
-    availableTracks.forEach(t=>{
-      const b=document.createElement('button');
-      b.className='pill'+(settings.musicTrack===t.index?' active':'');
-      b.textContent = `TRACK ${t.index}`;
-      b.addEventListener('click', ()=>{ playTrack(t.index); renderSettingsScreen(); });
-      c.appendChild(b);
-    });
-  }
+  const musicBlock=document.getElementById('musicBlock');
+  musicBlock.style.display='block';
+  renderPills('musicOptions',[true,false],settings.musicOn,v=>{
+    settings.musicOn=v;
+    if(v) ensureMusicPlaying(); else stopMusic();
+  },v=>v?'MUSIC ON':'MUSIC OFF');
 }
 
 /* ---------------------------------------------------------
@@ -1118,7 +1530,16 @@ function renderMultiSelectButtons(options, callback){
 }
 function setupInputForRound(gameObj, solo, callback){
   currentMultiselectSubmit = null;
-  if(!solo) return;
+  if(!solo){
+    // No buttons in watch mode at all - the whole play area is the input.
+    // A single tap anywhere reveals the answer and moves things along,
+    // which is exactly how you advance through an untimed (infinite-timer)
+    // round too.
+    choicesDiv.innerHTML='';
+    canvas.style.cursor='pointer';
+    canvas.onclick = ()=>{ canvas.onclick=null; canvas.style.cursor='default'; callback(null); };
+    return;
+  }
   if(gameObj.type==='click'){
     canvas.style.cursor='pointer';
     canvas.onclick = (e)=>{ const pt = canvasPoint(e); callback(gameObj.handleClick(pt)); };
@@ -1128,75 +1549,79 @@ function setupInputForRound(gameObj, solo, callback){
     renderChoiceButtons(gameObj.choices(), callback);
   }
 }
-function disableInput(gameObj){
+function disableInput(gameObj, solo){
   canvas.onclick=null; canvas.style.cursor='default';
-  if(!gameObj || gameObj.type!=='multiselect'){ choicesDiv.innerHTML=''; }
+  if(!solo || !gameObj || gameObj.type!=='multiselect'){ choicesDiv.innerHTML=''; }
 }
 function revealAnswer(gameObj, wasCorrect, solo){
   gameObj.drawHighlight();
-  const caption = gameObj.getCaption();
   if(solo && wasCorrect!==null){
-    feedback.textContent = (wasCorrect ? 'CORRECT — ' : 'MISSED — ') + caption;
+    feedback.textContent = wasCorrect ? 'CORRECT' : 'MISSED';
     feedback.className = 'feedback ' + (wasCorrect ? 'good' : 'bad');
   } else {
-    feedback.textContent = caption;
+    feedback.textContent = '';
     feedback.className = 'feedback';
   }
 }
 
 /* ---------------------------------------------------------
-   STAGE BAR (persistent, non-overlapping info: progress on the
-   left, timer/title/difficulty pill + pause/fullscreen on the right)
+   PLAYER HUD
 --------------------------------------------------------- */
-const fsSupported = !!(document.fullscreenEnabled);
-if(!fsSupported) document.getElementById('fsBtn').style.display='none';
-function toggleFullscreen(){
-  const stage = document.getElementById('pgStage');
-  if(!document.fullscreenElement){
-    stage.requestFullscreen().catch(()=>{});
-    if(screen.orientation && screen.orientation.lock){ screen.orientation.lock('landscape').catch(()=>{}); }
-  } else {
-    document.exitFullscreen().catch(()=>{});
-  }
+let lastShownSecond=null;
+function sessionLengthLabel(){
+  if(playMode==='eyetest') return 'UNTIMED';
+  if(settings.sessionType==='infinity') return '∞ ROUNDS';
+  if(settings.sessionType==='rounds') return `${settings.sessionRounds} ROUNDS`;
+  return `${settings.sessionMinutes} MIN`;
 }
-document.getElementById('fsBtn').addEventListener('click', toggleFullscreen);
-document.addEventListener('fullscreenchange', ()=>{
-  document.getElementById('fsBtn').textContent = document.fullscreenElement ? '⤢' : '⛶';
-});
-
 function updateStagebar(){
-  const timerNumEl = document.getElementById('stageTimerNum');
-  const titleEl = document.getElementById('stageTitleText');
-  const pillEl = document.getElementById('stageDiffPill');
-  const progWrap = document.getElementById('progressWrap');
-  const progInf = document.getElementById('progressInf');
-
+  const titleEl=document.getElementById('stageTitleText');
+  const pillEl=document.getElementById('stageDiffPill');
+  const lengthEl=document.getElementById('stageLengthText');
+  const progWrap=document.getElementById('progressWrap');
+  const progInf=document.getElementById('progressInf');
   if(playMode==='eyetest'){
-    timerNumEl.style.display='none';
-    progWrap.style.display='none'; progInf.style.display='none';
-    titleEl.textContent = gameById(eyetest.station).title;
-    pillEl.textContent = DIFF_LABEL[eyetest.difficulty];
-    pillEl.className = 'diffpill' + (EXTREME_DIFFS.includes(eyetest.difficulty)?' extreme':'');
-  } else {
-    timerNumEl.style.display='inline';
-    titleEl.textContent = currentGameObj.title;
-    pillEl.textContent = DIFF_LABEL[currentDiff];
-    pillEl.className = 'diffpill' + (EXTREME_DIFFS.includes(currentDiff)?' extreme':'');
-    if(settings.sessionType==='infinity'){ progWrap.style.display='none'; progInf.style.display='inline'; }
-    else {
-      progInf.style.display='none'; progWrap.style.display='block';
+    titleEl.textContent=gameById(eyetest.station).title;
+    pillEl.textContent=DIFF_LABEL[eyetest.difficulty];
+    pillEl.className='diffpill'+(EXTREME_DIFFS.includes(eyetest.difficulty)?' extreme':'');
+    lengthEl.textContent='UNTIMED';
+    progWrap.style.display='none';progInf.style.display='none';
+  }else{
+    titleEl.textContent=currentGameObj?currentGameObj.title:'';
+    pillEl.textContent=currentDiff?DIFF_LABEL[currentDiff]:'';
+    pillEl.className='diffpill'+(currentDiff&&EXTREME_DIFFS.includes(currentDiff)?' extreme':'');
+    lengthEl.textContent=sessionLengthLabel();
+    if(settings.sessionType==='infinity'){
+      progWrap.style.display='none';progInf.style.display='inline';
+    }else{
+      progInf.style.display='none';progWrap.style.display='block';
       let pct=0;
-      if(settings.sessionType==='rounds') pct = Math.min(100,(session.roundsPlayed/settings.sessionRounds)*100);
-      else pct = Math.min(100, ((Date.now()-session.startTime)/(settings.sessionMinutes*60000))*100);
-      document.getElementById('progressBar').style.width = pct+'%';
+      if(settings.sessionType==='rounds') pct=Math.min(100,(session.roundsPlayed/settings.sessionRounds)*100);
+      else pct=Math.min(100,((Date.now()-session.startTime)/(settings.sessionMinutes*60000))*100);
+      document.getElementById('progressBar').style.width=pct+'%';
     }
   }
 }
 
 /* ---------------------------------------------------------
-   PAUSE — halts BOTH the per-round timer AND the queued
+   PAUSE: halts BOTH the per-round timer AND the queued
    transition/reveal step, so nothing advances while paused.
 --------------------------------------------------------- */
+const fsSupported=!!document.fullscreenEnabled;
+if(!fsSupported) document.getElementById('fsBtn').style.display='none';
+function toggleFullscreen(){
+  const stage=document.getElementById('pgStage');
+  if(!document.fullscreenElement){
+    stage.requestFullscreen?.().catch(()=>{});
+    try{screen.orientation?.lock?.('landscape').catch(()=>{});}catch(e){}
+  }else{
+    document.exitFullscreen?.().catch(()=>{});
+  }
+}
+document.getElementById('fsBtn').addEventListener('click',toggleFullscreen);
+document.addEventListener('fullscreenchange',()=>{
+  document.getElementById('fsBtn').textContent=document.fullscreenElement?'⤢':'⛶';
+});
 function pauseGame(){
   if(paused) return;
   paused = true;
@@ -1215,32 +1640,55 @@ function resumeGame(){
   if(pausedWhileRunning) resumeTimerLoop();
   resumePendingStep();
 }
+document.getElementById('titlePlayBtn').addEventListener('click', ()=>{
+  ensureMusicPlaying();
+  showScreen('home', {noHistory:true});
+});
 document.getElementById('pauseBtn').addEventListener('click', ()=>{ paused ? resumeGame() : pauseGame(); });
+document.getElementById('infoBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  document.getElementById('pgPrompt').classList.toggle('show');
+});
+document.addEventListener('click', (e)=>{
+  const pop=document.getElementById('pgPrompt');
+  if(pop.classList.contains('show') && e.target.id!=='infoBtn' && !pop.contains(e.target)){
+    pop.classList.remove('show');
+  }
+});
 document.getElementById('resumeBtn').addEventListener('click', resumeGame);
-document.getElementById('pauseSettingsBtn').addEventListener('click', ()=>{ renderSettingsScreen(); showScreen('settings'); });
-document.getElementById('pauseHomeBtn').addEventListener('click', ()=>{
-  if(activeTimerInterval){ clearInterval(activeTimerInterval); activeTimerInterval=null; }
+document.getElementById('pauseSettingsBtn').addEventListener('click',()=>{
+  settingsOpenedFromPause=true;
+  if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  renderSettingsScreen();
+  showScreen('settings');
+});
+document.getElementById('pauseHomeBtn').addEventListener('click',()=>{
+  if(activeTimerInterval){clearInterval(activeTimerInterval);activeTimerInterval=null;}
   clearPendingStep();
-  paused=false; timerRunning=false;
+  paused=false;timerRunning=false;
   document.getElementById('pauseOverlay').style.display='none';
   if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
-  screenHistory = [];
-  showScreen('home', {noHistory:true});
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  document.body.classList.remove('playing');
+  screenHistory=[];
+  showScreen('home',{noHistory:true});
 });
 
 /* ---------------------------------------------------------
    PLAY SCREEN MODE SWITCHING
 --------------------------------------------------------- */
 function enterPlayScreen(mode){
-  playMode = mode;
+  playMode=mode;
+  document.body.classList.add('playing');
   showScreen('play');
-  const isEyetest = mode==='eyetest';
-  document.getElementById('pgDiffBar').style.display = isEyetest ? 'flex' : 'none';
-  document.getElementById('pgTimerWrap').style.display = isEyetest ? 'none' : 'block';
+  const isEyetest=mode==='eyetest';
+  document.getElementById('pgDiffBar').style.display=isEyetest?'flex':'none';
   document.getElementById('eyetestAgainBtn').style.display='none';
   document.getElementById('pauseOverlay').style.display='none';
-  document.getElementById('pauseBtn').textContent = '❚❚';
-  paused=false; timerRunning=false;
+  document.getElementById('pauseBtn').textContent='❚❚';
+  document.getElementById('pgTimerBar').style.width='100%';
+  document.getElementById('stageTimerNum').textContent=isEyetest?'':'';
+  paused=false;timerRunning=false;lastShownSecond=null;
   clearPendingStep();
 }
 
@@ -1248,8 +1696,14 @@ function enterPlayScreen(mode){
    TIMER LOOP (pause/resume-safe)
 --------------------------------------------------------- */
 function startTimerLoop(total, onTick, onExpire){
-  currentRemaining = total; currentTotal = total;
   currentTimerTick = onTick; currentTimerExpire = onExpire;
+  if(total==='inf'){
+    currentRemaining = Infinity; currentTotal = Infinity;
+    timerRunning = true; activeTimerInterval = null;
+    onTick(Infinity, Infinity);
+    return;
+  }
+  currentRemaining = total; currentTotal = total;
   timerRunning = true;
   onTick(currentRemaining, currentTotal);
   activeTimerInterval = setInterval(()=>{
@@ -1268,6 +1722,7 @@ function pauseTimerLoop(){
 function resumeTimerLoop(){
   if(currentRemaining==null || currentTimerTick==null) return;
   timerRunning = true;
+  if(currentTotal===Infinity) return;
   activeTimerInterval = setInterval(()=>{
     currentRemaining -= 0.1;
     currentTimerTick(Math.max(0,currentRemaining), currentTotal);
@@ -1282,16 +1737,9 @@ function resumeTimerLoop(){
 /* ---------------------------------------------------------
    TIMED ROUND ENGINE (Full Game + Individual Station)
 --------------------------------------------------------- */
-function transitionText(gameObj, diff){
-  let line;
-  if(!session.seenStations.has(gameObj.id)){
-    session.seenStations.add(gameObj.id);
-    line = FLAVOR_INTRO[gameObj.id];
-  } else {
-    line = pick(FLAVOR[gameObj.id]);
-  }
-  const diffLine = pick(DIFF_ANNOUNCE[diff]);
-  return {line, diffLine};
+function transitionText(gameObj,diff){
+  if(!session.seenStations.has(gameObj.id)) session.seenStations.add(gameObj.id);
+  return {line:nextNarratorLine(diff),diffLine:pick(DIFF_NARRATION[diff]||["Eyes up."])};
 }
 function showTransition(gameObj, diff, cb){
   const {line, diffLine} = transitionText(gameObj, diff);
@@ -1303,17 +1751,56 @@ function showTransition(gameObj, diff, cb){
   speakForRound(gameObj, diffLine, line);
   scheduleGameStep(()=>{ document.getElementById('transitionOverlay').style.display='none'; cb(); }, PACE_CONFIG[settings.pace].transition);
 }
-function updateTimerUI(remaining, total){
-  document.getElementById('stageTimerNum').textContent = Math.max(0,remaining).toFixed(2)+'s';
-  const pct = Math.max(0, remaining/total*100);
-  const bar = document.getElementById('pgTimerBar');
-  bar.style.width = pct+'%';
-  bar.style.background = remaining < total*0.3 ? 'var(--bad)' : 'var(--accent)';
-  if(session && settings.sessionType==='time') updateStagebar();
+function updateTimerUI(remaining,total){
+  const timerNum=document.getElementById('stageTimerNum');
+  const bar=document.getElementById('pgTimerBar');
+  if(total===Infinity){
+    timerNum.textContent='∞';
+    bar.style.width='100%';
+    bar.style.background='var(--accent)';
+    return;
+  }
+  const sec=Math.max(0,Math.ceil(remaining));
+  timerNum.textContent=sec;
+  if(sec!==lastShownSecond){
+    lastShownSecond=sec;
+    timerNum.classList.remove('pulse');
+    void timerNum.offsetWidth;
+    timerNum.classList.add('pulse');
+  }
+  const pct=Math.max(0,remaining/total*100);
+  bar.style.width=pct+'%';
+  bar.style.background=remaining<total*.3?'var(--bad)':'var(--accent)';
+  if(session&&settings.sessionType==='time') updateStagebar();
 }
+function watchPromptFor(gameObj){
+  const map={
+    oddbar:'Keep your eyes on the bars. One of them does not belong.',
+    hiddenshape:'Watch the field and see what shape starts to emerge.',
+    buriednumber:'Read the field before the hidden number slips past you.',
+    buriedword:'Study the field and see which words reveal themselves.',
+    sameshade:'Watch the two blocks. Decide which one your eyes trust.',
+    ghostbars:'Look through the stripes and let the hidden shape appear.',
+    lineshift:'Watch the balls carefully. One color is playing a trick on you.'
+  };
+  return map[gameObj.id] || 'Watch closely. The screen is about to cheat politely.';
+}
+function watchRevealIntroFor(gameObj){
+  const map={
+    oddbar:'The bars have given up their secret.',
+    hiddenshape:'There it is. The hidden shape was waiting in plain sight.',
+    buriednumber:'The number is out of hiding.',
+    buriedword:'The hidden words are finally willing to cooperate.',
+    sameshade:'The measuring tape has spoken.',
+    ghostbars:'The stripes have lost their hiding place.',
+    lineshift:'The color trick is over. The true colors are shown now.'
+  };
+  return map[gameObj.id] || 'The answer is ready.';
+}
+
 function actualRunTimedRound(gameObj, diff, onDone){
   currentGameObj = gameObj; currentDiff = diff;
-  document.getElementById('pgPrompt').textContent = gameObj.prompt;
+  const pgPromptEl=document.getElementById('pgPrompt'); pgPromptEl.textContent = settings.soloMode ? gameObj.prompt : watchPromptFor(gameObj); pgPromptEl.classList.remove('show');
   clearFeedbackUI();
   gameObj.render(diff);
   updateStagebar();
@@ -1340,7 +1827,7 @@ function actualRunTimedRound(gameObj, diff, onDone){
   function finish(){
     pauseTimerLoop();
     timerRunning = false;
-    disableInput(gameObj);
+    disableInput(gameObj, solo);
     revealAnswer(gameObj, wasCorrect, solo);
     sessionScore.total++;
     if(solo && wasCorrect) sessionScore.correct++;
@@ -1355,31 +1842,41 @@ function sessionLimitReached(){
   if(settings.sessionType==='rounds') return session.roundsPlayed >= settings.sessionRounds;
   return (Date.now()-session.startTime) >= settings.sessionMinutes*60000;
 }
+function refillFullOrder(){
+  const prior=session.lastStation||null;
+  let next=shuffle(GAME_IDS);
+  if(prior&&next.length>1&&next[0]===prior)[next[0],next[1]]=[next[1],next[0]];
+  session.currentBag=next;
+}
+function nextFullStation(){
+  if(!session.currentBag||session.currentBag.length===0) refillFullOrder();
+  const station=session.currentBag.shift();
+  session.station=station;
+  session.lastStation=station;
+  return station;
+}
 function nextRound(){
-  if(sessionLimitReached()){ showSummary(); return; }
-  const gameObj = gameById(session.station);
-  const diff = DIFFS[session.diffIndex % DIFFS.length];
-  runTimedRound(gameObj, diff, ()=>{
+  if(sessionLimitReached()){showSummary();return;}
+  const gameObj=gameById(session.mode==='full'?nextFullStation():session.station);
+  const diff=DIFFS[session.diffIndex%DIFFS.length];
+  runTimedRound(gameObj,diff,()=>{
     session.roundsPlayed++;
-    session.diffIndex++;
-    if(session.mode==='full' && session.diffIndex >= DIFFS.length){
-      session.diffIndex = 0;
-      const others = GAME_IDS.filter(id=>id!==session.station);
-      session.station = pick(others);
-    }
+    session.diffIndex=(session.diffIndex+1)%DIFFS.length;
     nextRound();
   });
 }
 function startFullGame(){
   enterPlayScreen('full');
-  sessionScore = {correct:0, total:0};
-  session = { mode:'full', station: pick(GAME_IDS), diffIndex:0, roundsPlayed:0, startTime:Date.now(), seenStations:new Set() };
+  sessionScore={correct:0,total:0};
+  session={mode:'full',station:null,lastStation:null,currentBag:[],diffIndex:0,roundsPlayed:0,startTime:Date.now(),seenStations:new Set()};
+  ensureMusicPlaying();
   nextRound();
 }
 function startIndividual(stationId){
   enterPlayScreen('individual');
-  sessionScore = {correct:0, total:0};
-  session = { mode:'individual', station: stationId, diffIndex:0, roundsPlayed:0, startTime:Date.now(), seenStations:new Set() };
+  sessionScore={correct:0,total:0};
+  session={mode:'individual',station:stationId,diffIndex:0,roundsPlayed:0,startTime:Date.now(),seenStations:new Set()};
+  ensureMusicPlaying();
   nextRound();
 }
 function showSummary(){
@@ -1391,9 +1888,10 @@ function showSummary(){
 document.getElementById('summaryAgain').addEventListener('click', ()=>{
   if(session.mode==='full') startFullGame(); else startIndividual(session.station);
 });
-document.getElementById('summaryHome').addEventListener('click', ()=>{
-  screenHistory = [];
-  showScreen('home', {noHistory:true});
+document.getElementById('summaryHome').addEventListener('click',()=>{
+  document.body.classList.remove('playing');
+  screenHistory=[];
+  showScreen('home',{noHistory:true});
 });
 
 /* ---------------------------------------------------------
@@ -1412,19 +1910,20 @@ function buildEyetestDiffBar(){
 }
 function runEyetestRound(){
   const gameObj = gameById(eyetest.station);
-  document.getElementById('pgPrompt').textContent = gameObj.prompt;
+  const pgPromptEl=document.getElementById('pgPrompt'); pgPromptEl.textContent = settings.soloMode ? gameObj.prompt : watchPromptFor(gameObj); pgPromptEl.classList.remove('show');
   clearFeedbackUI();
   gameObj.render(eyetest.difficulty);
   updateStagebar();
   setupInputForRound(gameObj, true, (correct)=>{
-    disableInput(gameObj);
+    disableInput(gameObj, true);
     revealAnswer(gameObj, correct, true);
     document.getElementById('eyetestAgainBtn').style.display='inline-block';
   });
 }
 function startEyeTest(stationId){
-  eyetest = { station: stationId, difficulty:'easy' };
+  eyetest={station:stationId,difficulty:'easy'};
   enterPlayScreen('eyetest');
+  ensureMusicPlaying();
   buildEyetestDiffBar();
   runEyetestRound();
 }
