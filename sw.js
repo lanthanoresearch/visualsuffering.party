@@ -24,7 +24,9 @@ const PRECACHE = [
   './apple-touch-icon.png',
   './favicon-32.png',
   './favicon-48.png',
-  './Curquis%20Groove.mp3'
+  './Curquis%20Groove.mp3',
+  './Specimen%20Shuffle.mp3',
+  './Quirky%20funk.mp3'
 ];
 
 self.addEventListener('install', (event) => {
